@@ -315,6 +315,70 @@ function PortalPage() {
   };
 
 
+  // Profile: display name / handle + password change
+  const profileRow = rows[0] ?? null;
+  const [profileHandle, setProfileHandle] = useState("");
+  const [profileSaving, setProfileSaving] = useState(false);
+  useEffect(() => {
+    if (profileRow) setProfileHandle(profileRow.influencer_handle ?? "");
+  }, [profileRow?.id, profileRow?.influencer_handle]);
+
+  const saveProfile = async () => {
+    const handle = profileHandle.trim();
+    if (!handle) {
+      toast.error("Enter your name or handle.");
+      return;
+    }
+    if (!profileRow) return;
+    setProfileSaving(true);
+    try {
+      const { error } = await supabase
+        .from("campaign_influencers")
+        .update({ influencer_handle: handle })
+        .eq("id", profileRow.id);
+      if (error) throw error;
+      toast.success("Profile updated");
+      queryClient.invalidateQueries({ queryKey: ["portal", "rows"] });
+    } catch {
+      toast.error("Couldn't save your profile. Please try again.");
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  const [chgCurrent, setChgCurrent] = useState("");
+  const [chgNew, setChgNew] = useState("");
+  const [chgConfirm, setChgConfirm] = useState("");
+  const [chgSaving, setChgSaving] = useState(false);
+
+  const changePassword = async () => {
+    if (chgNew.length < 8) {
+      toast.error("Use at least 8 characters for the new password.");
+      return;
+    }
+    if (chgNew !== chgConfirm) {
+      toast.error("The two new passwords do not match.");
+      return;
+    }
+    setChgSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: chgNew,
+        current_password: chgCurrent || undefined,
+        data: { password_changed: true },
+      } as never);
+      if (error) throw error;
+      toast.success("Password updated");
+      setChgCurrent("");
+      setChgNew("");
+      setChgConfirm("");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't update your password.");
+    } finally {
+      setChgSaving(false);
+    }
+  };
+
   const stats = [
     { label: "Content views", value: totals.views.toLocaleString() },
     { label: "Engagements", value: totals.engagements.toLocaleString() },
@@ -540,6 +604,77 @@ function PortalPage() {
                 </div>
               )}
             </section>
+
+            <section className="mt-10 rounded-md border border-[#0ABEDF] p-6">
+              <p className="text-[11px] uppercase tracking-wider text-slate-400">Profile</p>
+
+              <div className="mt-4 grid gap-8 md:grid-cols-2">
+                <div className="space-y-4">
+                  <p className="text-sm font-medium text-slate-900">Your information</p>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="profile-handle">Name / handle</Label>
+                    <Input
+                      id="profile-handle"
+                      value={profileHandle}
+                      onChange={(e) => setProfileHandle(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="profile-email">Login email</Label>
+                    <Input id="profile-email" value={email} readOnly disabled />
+                    <p className="text-xs text-slate-500">
+                      Contact your OutSta manager to change your login email.
+                    </p>
+                  </div>
+                  <Button
+                    className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                    onClick={saveProfile}
+                    disabled={profileSaving || !profileRow}
+                  >
+                    {profileSaving ? "Saving…" : "Save changes"}
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-sm font-medium text-slate-900">Change password</p>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="chg-current">Current password</Label>
+                    <Input
+                      id="chg-current"
+                      type="password"
+                      value={chgCurrent}
+                      onChange={(e) => setChgCurrent(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="chg-new">New password</Label>
+                    <Input
+                      id="chg-new"
+                      type="password"
+                      value={chgNew}
+                      onChange={(e) => setChgNew(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="chg-confirm">Confirm new password</Label>
+                    <Input
+                      id="chg-confirm"
+                      type="password"
+                      value={chgConfirm}
+                      onChange={(e) => setChgConfirm(e.target.value)}
+                    />
+                  </div>
+                  <Button
+                    className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                    onClick={changePassword}
+                    disabled={chgSaving}
+                  >
+                    {chgSaving ? "Updating…" : "Update password"}
+                  </Button>
+                </div>
+              </div>
+            </section>
+
 
             <Dialog open={formOpen} onOpenChange={setFormOpen}>
               <DialogContent>
