@@ -140,6 +140,7 @@ const iconBtn =
   "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900";
 
 function AppPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ["app-data"] });
@@ -147,8 +148,23 @@ function AppPage() {
 
   const [activeTab, setActiveTab] = useState("dashboard");
 
+  // Admin gate: only confirmed admins see the dashboard; everyone else goes to /portal.
+  const { data: adminData, isLoading: adminLoading } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      try {
+        return await checkIsAdmin();
+      } catch {
+        return { isAdmin: false };
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const isAdmin = adminData?.isAdmin === true;
+
   const { data, isLoading } = useQuery({
     queryKey: ["app-data"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await fetchAppData();
