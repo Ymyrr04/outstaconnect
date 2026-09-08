@@ -23,6 +23,7 @@ export type Database = {
           created_at: string
           date_onboarded: string | null
           date_paid: string | null
+          email: string | null
           engagements: number
           id: string
           influencer_handle: string
@@ -30,6 +31,7 @@ export type Database = {
           link_clicks: number
           slug: string
           status: string
+          user_id: string | null
         }
         Insert: {
           campaign_id: string
@@ -39,6 +41,7 @@ export type Database = {
           created_at?: string
           date_onboarded?: string | null
           date_paid?: string | null
+          email?: string | null
           engagements?: number
           id?: string
           influencer_handle: string
@@ -46,6 +49,7 @@ export type Database = {
           link_clicks?: number
           slug: string
           status?: string
+          user_id?: string | null
         }
         Update: {
           campaign_id?: string
@@ -55,6 +59,7 @@ export type Database = {
           created_at?: string
           date_onboarded?: string | null
           date_paid?: string | null
+          email?: string | null
           engagements?: number
           id?: string
           influencer_handle?: string
@@ -62,6 +67,7 @@ export type Database = {
           link_clicks?: number
           slug?: string
           status?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -149,6 +155,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_influencer_access: { Args: never; Returns: number }
       slugify_handle: { Args: { _handle: string }; Returns: string }
     }
     Enums: {
