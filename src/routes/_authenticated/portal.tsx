@@ -406,13 +406,13 @@ function PortalPage() {
 
 
           <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-[#066F85] text-white hover:border-[#0899B5] hover:bg-[#0899B5]"
+            variant="ghost"
+            size="icon"
+            aria-label="Sign out"
+            className="text-white/70 hover:bg-white/10 hover:text-white"
             onClick={signOut}
           >
-            <LogOut className="h-4 w-4" />
-            Sign out
+            <LogOut className="h-5 w-5" />
           </Button>
         </div>
       </header>
