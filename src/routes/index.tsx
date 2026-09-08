@@ -42,7 +42,7 @@ import {
 import { CreateCampaignDialog, type CampaignRecord } from "@/components/CreateCampaignDialog";
 import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfluencerDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { getLeadCounts } from "@/lib/leads.functions";
+import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -188,6 +188,18 @@ function AppPage() {
     },
   });
 
+  const { data: leadsData, isLoading: leadsLoading } = useQuery({
+    queryKey: ["app-data", "leads"],
+    queryFn: async () => {
+      try {
+        return await getLeads();
+      } catch {
+        return [];
+      }
+    },
+  });
+  const leadsList = leadsData ?? [];
+
   const campaigns = data?.campaigns ?? [];
   const influencers = data?.influencers ?? [];
   const campaign = campaigns[0] ?? null;
@@ -313,6 +325,7 @@ function AppPage() {
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="influencers">Influencers</TabsTrigger>
+            <TabsTrigger value="leads">Leads</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -659,6 +672,62 @@ function AppPage() {
                           </td>
                         </tr>
                       ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="leads">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 className="mb-4 text-lg font-semibold text-slate-900">
+                Sign-ups from creator links
+              </h2>
+              {leadsLoading ? (
+                <p className="py-10 text-center text-sm text-slate-500">Loading…</p>
+              ) : leadsList.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <UserCheck className="h-10 w-10 text-slate-300" />
+                  <p className="mt-3 text-sm font-medium text-slate-600">No sign-ups yet</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[900px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                        <th className={thClass}>Name</th>
+                        <th className={thClass}>Work Email</th>
+                        <th className={thClass}>Company</th>
+                        <th className={thClass}>Hiring For</th>
+                        <th className={thClass}>Company Size</th>
+                        <th className={thClass}>Came From</th>
+                        <th className={thClass}>Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {leadsList.map((lead) => {
+                        const source = influencers.find(
+                          (i) => i.id === lead.campaign_influencer_id,
+                        );
+                        return (
+                          <tr key={lead.id} className="border-b border-slate-100 last:border-0">
+                            <td className="py-4 pr-4 font-medium text-slate-900">
+                              {lead.full_name}
+                            </td>
+                            <td className="py-4 pr-4 text-slate-600">{lead.work_email}</td>
+                            <td className="py-4 pr-4 text-slate-600">{lead.company_name}</td>
+                            <td className="py-4 pr-4 text-slate-600">{lead.roles_hiring_for}</td>
+                            <td className="py-4 pr-4 text-slate-600">{lead.company_size}</td>
+                            <td className="py-4 pr-4 text-slate-900">
+                              {source ? source.influencer_handle : "—"}
+                            </td>
+                            <td className="py-4 pr-4 text-slate-600">
+                              {formatDate(lead.created_at)}
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
