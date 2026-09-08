@@ -115,6 +115,34 @@ function AuthPage() {
           <Button type="submit" className="w-full" disabled={busy}>
             {busy ? "Please wait…" : "Sign in"}
           </Button>
+          <button
+            type="button"
+            onClick={async () => {
+              const trimmed = email.trim();
+              if (!trimmed) {
+                toast.error("Enter your email first, then tap Forgot password.");
+                return;
+              }
+              setBusy(true);
+              try {
+                const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                if (error) throw error;
+                toast.success("Reset link sent. Check your email inbox.");
+              } catch (err) {
+                toast.error(
+                  err instanceof Error ? err.message : "Something went wrong. Please try again.",
+                );
+              } finally {
+                setBusy(false);
+              }
+            }}
+            className="block w-full text-center text-xs text-[#066F85] underline-offset-4 hover:underline"
+            disabled={busy}
+          >
+            Forgot password?
+          </button>
         </form>
 
       </div>
