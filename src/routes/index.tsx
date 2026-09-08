@@ -831,6 +831,51 @@ function AppPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog
+        open={!!newCredentials}
+        onOpenChange={(next) => {
+          if (!next) setNewCredentials(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>New sign-in password</AlertDialogTitle>
+            <AlertDialogDescription>
+              Share these details with the creator. The password is shown only once.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {newCredentials && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm">
+              <p className="text-slate-600">{newCredentials.email}</p>
+              <p className="mt-1 font-mono font-medium text-slate-900">
+                {newCredentials.password}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      `Email: ${newCredentials.email}\nPassword: ${newCredentials.password}`,
+                    );
+                    toast.success("Copied");
+                  } catch {
+                    toast.error("Couldn't copy. Please select the text instead.");
+                  }
+                }}
+              >
+                Copy details
+              </Button>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Done</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   );
 }
