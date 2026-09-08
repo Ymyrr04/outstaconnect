@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { publicLandingUrl } from "@/lib/public-url";
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -129,15 +131,8 @@ const tractionSteps = [
 
 const thClass = "py-3 pr-4 font-medium";
 
-const PUBLIC_SITE_URL = "https://outstaconnect.lovable.app";
 
-// Preview/editor hosts require a login, so always share the public site link.
-const publicLandingUrl = (slug: string) => {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const isPrivateHost =
-    origin.includes("lovableproject.com") || origin.includes("-preview--") || origin.includes("localhost");
-  return `${isPrivateHost || !origin ? PUBLIC_SITE_URL : origin}/lp/${slug}`;
-};
+
 
 const iconBtn =
   "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900";
@@ -567,7 +562,16 @@ function AppPage() {
             <section className="rounded-2xl border border-slate-200 bg-white p-6">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-lg font-semibold text-slate-900">Influencers</h2>
-                <div className="max-w-xs">
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/lp-preview"
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-[#0ABEDF] hover:text-[#0899B5]"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Preview &amp; edit landing page
+                  </Link>
+                  <div className="max-w-xs">
+
                   <Select value={campaignFilter} onValueChange={setCampaignFilter}>
                     <SelectTrigger>
                       <SelectValue placeholder="All campaigns" />
@@ -581,8 +585,10 @@ function AppPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  </div>
                 </div>
               </div>
+
               {isLoading ? (
                 <p className="py-10 text-center text-sm text-slate-500">Loading…</p>
               ) : filteredInfluencers.length === 0 ? (
