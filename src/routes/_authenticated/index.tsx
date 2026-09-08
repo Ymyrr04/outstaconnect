@@ -661,6 +661,7 @@ function AppPage() {
                         <th className={thClass}>Content Type</th>
                         <th className={thClass}>Leads</th>
                         <th className={thClass}>Shares</th>
+                        <th className={thClass}>Link Clicks</th>
                         <th className={thClass}>Status</th>
                         <th className={thClass}>Actions</th>
                       </tr>
@@ -680,6 +681,9 @@ function AppPage() {
                           </td>
                           <td className="py-4 pr-4 text-slate-600">
                             {rowShares(row).toLocaleString()}
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">
+                            {(row.link_clicks ?? 0).toLocaleString()}
                           </td>
                           <td className="py-4 pr-4">
                             <span
