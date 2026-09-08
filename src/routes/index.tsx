@@ -584,6 +584,7 @@ function AppPage() {
                         <th className={thClass}>Campaign Name</th>
                         <th className={thClass}>Content Type</th>
                         <th className={thClass}>Leads</th>
+                        <th className={thClass}>Shares</th>
                         <th className={thClass}>Status</th>
                         <th className={thClass}>Actions</th>
                       </tr>
