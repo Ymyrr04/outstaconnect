@@ -562,7 +562,16 @@ function AppPage() {
             <section className="rounded-2xl border border-slate-200 bg-white p-6">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="text-lg font-semibold text-slate-900">Influencers</h2>
-                <div className="max-w-xs">
+                <div className="flex items-center gap-3">
+                  <Link
+                    to="/lp-preview"
+                    className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-[#0ABEDF] hover:text-[#0899B5]"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Preview &amp; edit landing page
+                  </Link>
+                  <div className="max-w-xs">
+
                   <Select value={campaignFilter} onValueChange={setCampaignFilter}>
                     <SelectTrigger>
                       <SelectValue placeholder="All campaigns" />
