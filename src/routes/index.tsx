@@ -387,11 +387,14 @@ function Dashboard() {
                         {row.influencer_handle}
                       </td>
                       <td className="px-6 py-4 text-slate-600">{row.content_type}</td>
-                      <td className="px-6 py-4 text-slate-900">{row.leads.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-slate-900">
+                        {rowLeads(row).toLocaleString()}
+                      </td>
                       <td className="px-6 py-4 text-slate-600">{currency(row.cost_per_lead)}</td>
                       <td className="px-6 py-4 font-medium text-slate-900">
-                        {currency(row.leads * row.cost_per_lead)}
+                        {currency(rowLeads(row) * row.cost_per_lead)}
                       </td>
+
                       <td className="px-6 py-4 text-slate-600">{formatDate(row.date_onboarded)}</td>
                       <td className="px-6 py-4 text-slate-600">{formatDate(row.date_paid)}</td>
                       <td className="px-6 py-4">
