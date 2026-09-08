@@ -135,7 +135,7 @@ export function AddInfluencerDialog({
         campaign_id: campaignId,
         influencer_handle: form.handle.trim(),
         slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
-
+        email: form.email.trim().toLowerCase() || null,
         content_type: form.contentType.trim(),
         leads: toInt(form.leads),
         cost_per_lead: Number(form.costPerLead) || 0,
