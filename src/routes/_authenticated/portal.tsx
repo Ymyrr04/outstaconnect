@@ -260,6 +260,61 @@ function PortalPage() {
     navigate({ to: "/auth", replace: true });
   };
 
+  // First sign-in: ask the creator to pick their own password.
+  const [pwOpen, setPwOpen] = useState(false);
+  const [pwCurrent, setPwCurrent] = useState("");
+  const [pwNew, setPwNew] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
+  const [pwError, setPwError] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const meta = data.user?.user_metadata as { password_changed?: boolean } | undefined;
+        if (active && data.user && meta?.password_changed !== true) setPwOpen(true);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const submitPassword = async () => {
+    setPwError("");
+    if (pwNew.length < 8) {
+      setPwError("Use at least 8 characters.");
+      return;
+    }
+    if (pwNew !== pwConfirm) {
+      setPwError("The two passwords do not match.");
+      return;
+    }
+    setPwSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: pwNew,
+        current_password: pwCurrent || undefined,
+        data: { password_changed: true },
+      } as never);
+      if (error) throw error;
+      toast.success("Password updated");
+      setPwOpen(false);
+      setPwCurrent("");
+      setPwNew("");
+      setPwConfirm("");
+    } catch (e) {
+      setPwError(e instanceof Error ? e.message : "Could not update the password.");
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
+
   const stats = [
     { label: "Content views", value: totals.views.toLocaleString() },
     { label: "Engagements", value: totals.engagements.toLocaleString() },
