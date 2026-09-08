@@ -87,7 +87,7 @@ const averageDate = (dates: (string | null)[]) => {
 function statusPill(status: string) {
   const s = status.toLowerCase();
   if (s === "paid") return "bg-emerald-100 text-emerald-700";
-  if (s === "on track") return "bg-blue-100 text-blue-700";
+  if (s === "on track") return "bg-[#B2EEF8] text-[#066F85]";
   return "bg-slate-100 text-slate-600";
 }
 
