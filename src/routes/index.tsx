@@ -688,6 +688,16 @@ function AppPage() {
                               </button>
                               <button
                                 type="button"
+                                aria-label={`Reset password for ${row.influencer_handle}`}
+                                title="Reset sign-in password"
+                                className={iconBtn}
+                                disabled={resettingId === row.id}
+                                onClick={() => void resetPassword(row)}
+                              >
+                                <KeyRound className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
                                 aria-label={`Edit ${row.influencer_handle}`}
                                 className={iconBtn}
                                 onClick={() => setEditInfluencer(row)}
