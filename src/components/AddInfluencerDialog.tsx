@@ -198,6 +198,17 @@ export function AddInfluencerDialog({
               {errors.handle && <p className="text-xs text-destructive">{errors.handle}</p>}
             </div>
             <div className="space-y-1.5">
+              <Label htmlFor="slug">Landing page slug</Label>
+              <Input
+                id="slug"
+                value={form.slug}
+                maxLength={80}
+                placeholder="auto from handle"
+                onChange={(e) => set("slug", e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="content-type">Content type</Label>
               <Input
                 id="content-type"
