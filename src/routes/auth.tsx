@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import outstaLogoAsset from "@/assets/outsta-logo.png.asset.json";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -69,8 +69,8 @@ function AuthPage() {
     <main className="flex min-h-screen items-center justify-center bg-white px-6 py-16">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-slate-900" />
-          <span className="text-sm font-semibold tracking-tight text-slate-900">OutSta</span>
+          <img src={outstaLogoAsset.url} alt="OutSta logo" className="h-8 w-auto" />
+          <span className="text-base font-semibold tracking-tight text-[#066F85]">OutSta</span>
         </div>
 
         <h1 className="text-xl font-semibold tracking-tight text-slate-900">Creator sign in</h1>

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import outstaLogoAsset from "@/assets/outsta-logo.png.asset.json";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -136,6 +137,10 @@ function LandingPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-5 py-12">
       <div className="mx-auto w-full max-w-md">
+        <div className="mb-6 flex items-center gap-2">
+          <img src={outstaLogoAsset.url} alt="OutSta logo" className="h-8 w-auto" />
+          <span className="text-base font-semibold tracking-tight text-[#066F85]">OutSta</span>
+        </div>
         <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
           Hire vetted remote talent, faster
         </h1>
@@ -146,7 +151,7 @@ function LandingPage() {
         <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
           {done ? (
             <div className="flex flex-col items-center py-8 text-center">
-              <CheckCircle2 className="h-12 w-12 text-emerald-500" />
+              <CheckCircle2 className="h-12 w-12 text-[#0ABEDF]" />
               <p className="mt-4 text-base font-medium text-slate-900">
                 Thanks! We'll be in touch within 1 business day.
               </p>
