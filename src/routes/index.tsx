@@ -326,33 +326,20 @@ function AppPage() {
               </div>
             ) : (
               <div className="space-y-6 pb-4">
-                <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                  {stats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                      <div
-                        key={stat.label}
-                        className={`rounded-xl border p-5 ${stat.cardBg}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${stat.iconBg}`}
-                          >
-                            <Icon className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-slate-700">{stat.label}</p>
-                            {stat.sub && (
-                              <p className="text-[11px] text-slate-400">{stat.sub}</p>
-                            )}
-                          </div>
-                        </div>
-                        <p className="mt-3 text-2xl font-bold text-slate-900">
-                          {statValues[index]}
-                        </p>
-                      </div>
-                    );
-                  })}
+                <section className="flex flex-col divide-y divide-border border sm:flex-row sm:divide-y-0 sm:divide-x">
+                  {stats.map((stat, index) => (
+                    <div key={stat.label} className="flex-1 px-5 py-5">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        {stat.label}
+                      </p>
+                      <p className="mt-1 text-2xl font-bold text-foreground">
+                        {statValues[index]}
+                      </p>
+                      {stat.sub && (
+                        <p className="mt-0.5 text-xs text-muted-foreground">{stat.sub}</p>
+                      )}
+                    </div>
+                  ))}
                 </section>
 
                 <section className="rounded-xl border border-slate-200 bg-white px-6 py-6">
