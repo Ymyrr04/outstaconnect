@@ -349,39 +349,36 @@ function AppPage() {
                   <p className="mt-0.5 text-xs text-slate-500">
                     From content → to leads → to revenue.
                   </p>
-                  <div className="mt-6 flex flex-col items-stretch gap-6 md:flex-row md:items-start md:justify-between">
+                  <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                     {tractionSteps.map((step, index) => {
-                      const Icon = step.icon;
                       const isLast = index === tractionSteps.length - 1;
+                      const isLeads = index === 3;
+                      const number = String(index + 1).padStart(2, "0");
                       return (
                         <div key={step.label} className="flex flex-1 items-center gap-4">
-                          <div className="flex flex-1 items-center gap-4 md:flex-col md:text-center">
-                            <div
-                              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white ${step.color}`}
+                          <div className={`flex-1 ${isLeads ? "border-l-2 border-primary pl-4" : ""}`}>
+                            <p
+                              className={`text-[11px] font-medium uppercase tracking-wide ${
+                                isLeads ? "text-primary" : "text-muted-foreground"
+                              }`}
                             >
-                              <Icon className="h-6 w-6" />
-                            </div>
-                            <div className="flex flex-col text-left md:items-center md:text-center">
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={`flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white ${step.badge}`}
-                                >
-                                  {index + 1}
-                                </span>
-                                <p className="text-xs font-medium text-slate-600">{step.label}</p>
-                              </div>
-                              <p className="mt-1 text-2xl font-bold text-slate-900">
-                                {tractionValues[index]}
-                              </p>
-                              <p className="mt-0.5 text-[11px] text-slate-400">
-                                {step.description}
-                              </p>
-                            </div>
+                              {number} · {step.label}
+                            </p>
+                            <p
+                              className={`mt-1 text-2xl font-bold ${
+                                isLeads ? "text-primary" : "text-foreground"
+                              }`}
+                            >
+                              {tractionValues[index]}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                              {step.description}
+                            </p>
                           </div>
                           {!isLast && (
-                            <div className="flex items-center justify-center md:mt-5 md:w-8">
-                              <ArrowRight className="hidden h-5 w-5 text-slate-300 md:block" />
-                              <ArrowRight className="block h-5 w-5 rotate-90 text-slate-300 md:hidden" />
+                            <div className="flex items-center justify-center md:w-8">
+                              <ArrowRight className="hidden h-5 w-5 text-muted-foreground/30 md:block" />
+                              <ArrowRight className="block h-5 w-5 rotate-90 text-muted-foreground/30 md:hidden" />
                             </div>
                           )}
                         </div>
