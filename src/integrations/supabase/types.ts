@@ -103,6 +103,44 @@ export type Database = {
         }
         Relationships: []
       }
+      content_posts: {
+        Row: {
+          campaign_influencer_id: string
+          created_at: string
+          engagements: number
+          id: string
+          post_url: string
+          shares: number
+          views: number
+        }
+        Insert: {
+          campaign_influencer_id: string
+          created_at?: string
+          engagements?: number
+          id?: string
+          post_url: string
+          shares?: number
+          views?: number
+        }
+        Update: {
+          campaign_influencer_id?: string
+          created_at?: string
+          engagements?: number
+          id?: string
+          post_url?: string
+          shares?: number
+          views?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_posts_campaign_influencer_id_fkey"
+            columns: ["campaign_influencer_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_influencers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           campaign_influencer_id: string
