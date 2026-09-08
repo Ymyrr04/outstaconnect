@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { LogOut, Pencil, Trash2, Plus } from "lucide-react";
+import { LogOut, Pencil, Trash2, Plus, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -175,6 +175,7 @@ function PortalPage() {
   const [form, setForm] = useState({ post_url: "", views: "0", engagements: "0", shares: "0" });
   const [formError, setFormError] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const refreshContent = () =>
     queryClient.invalidateQueries({ queryKey: ["portal", "content-posts"] });
@@ -412,15 +413,26 @@ function PortalPage() {
           </div>
 
 
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Sign out"
-            className="text-white/70 hover:bg-white/10 hover:text-white"
-            onClick={signOut}
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Profile"
+              className="text-white/70 hover:bg-white/10 hover:text-white"
+              onClick={() => setProfileOpen(true)}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Sign out"
+              className="text-white/70 hover:bg-white/10 hover:text-white"
+              onClick={signOut}
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -612,77 +624,6 @@ function PortalPage() {
               )}
             </section>
 
-            <section className="mt-10 rounded-md border border-[#0ABEDF] p-6">
-              <p className="text-[11px] uppercase tracking-wider text-slate-400">Profile</p>
-
-              <div className="mt-4 grid gap-8 md:grid-cols-2">
-                <div className="space-y-4">
-                  <p className="text-sm font-medium text-slate-900">Your information</p>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="profile-handle">Name / handle</Label>
-                    <Input
-                      id="profile-handle"
-                      value={profileHandle}
-                      onChange={(e) => setProfileHandle(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="profile-email">Login email</Label>
-                    <Input id="profile-email" value={email} readOnly disabled />
-                    <p className="text-xs text-slate-500">
-                      Contact your OutSta manager to change your login email.
-                    </p>
-                  </div>
-                  <Button
-                    className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
-                    onClick={saveProfile}
-                    disabled={profileSaving || !profileRow}
-                  >
-                    {profileSaving ? "Saving…" : "Save changes"}
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  <p className="text-sm font-medium text-slate-900">Change password</p>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="chg-current">Current password</Label>
-                    <Input
-                      id="chg-current"
-                      type="password"
-                      value={chgCurrent}
-                      onChange={(e) => setChgCurrent(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="chg-new">New password</Label>
-                    <Input
-                      id="chg-new"
-                      type="password"
-                      value={chgNew}
-                      onChange={(e) => setChgNew(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="chg-confirm">Confirm new password</Label>
-                    <Input
-                      id="chg-confirm"
-                      type="password"
-                      value={chgConfirm}
-                      onChange={(e) => setChgConfirm(e.target.value)}
-                    />
-                  </div>
-                  <Button
-                    className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
-                    onClick={changePassword}
-                    disabled={chgSaving}
-                  >
-                    {chgSaving ? "Updating…" : "Update password"}
-                  </Button>
-                </div>
-              </div>
-            </section>
-
-
             <Dialog open={formOpen} onOpenChange={setFormOpen}>
               <DialogContent>
                 <DialogHeader>
@@ -755,6 +696,85 @@ function PortalPage() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog open={profileOpen} onOpenChange={setProfileOpen}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Profile</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-8 md:grid-cols-2">
+                  <div className="space-y-4">
+                    <p className="text-sm font-medium text-slate-900">Your information</p>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="profile-handle">Name / handle</Label>
+                      <Input
+                        id="profile-handle"
+                        value={profileHandle}
+                        onChange={(e) => setProfileHandle(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="profile-email">Login email</Label>
+                      <Input id="profile-email" value={email} readOnly disabled />
+                      <p className="text-xs text-slate-500">
+                        Contact your OutSta manager to change your login email.
+                      </p>
+                    </div>
+                    <Button
+                      className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                      onClick={() => {
+                        saveProfile();
+                        setProfileOpen(false);
+                      }}
+                      disabled={profileSaving || !profileRow}
+                    >
+                      {profileSaving ? "Saving…" : "Save changes"}
+                    </Button>
+                  </div>
+
+                  <div className="space-y-4">
+                    <p className="text-sm font-medium text-slate-900">Change password</p>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="chg-current">Current password</Label>
+                      <Input
+                        id="chg-current"
+                        type="password"
+                        value={chgCurrent}
+                        onChange={(e) => setChgCurrent(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="chg-new">New password</Label>
+                      <Input
+                        id="chg-new"
+                        type="password"
+                        value={chgNew}
+                        onChange={(e) => setChgNew(e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="chg-confirm">Confirm new password</Label>
+                      <Input
+                        id="chg-confirm"
+                        type="password"
+                        value={chgConfirm}
+                        onChange={(e) => setChgConfirm(e.target.value)}
+                      />
+                    </div>
+                    <Button
+                      className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                      onClick={() => {
+                        changePassword();
+                        setProfileOpen(false);
+                      }}
+                      disabled={chgSaving}
+                    >
+                      {chgSaving ? "Updating…" : "Update password"}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </>
 
         )}
