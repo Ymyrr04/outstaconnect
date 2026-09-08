@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as LpPreviewRouteImport } from './routes/lp-preview'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as LpSlugRouteImport } from './routes/lp.$slug'
 
@@ -35,6 +36,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LpPreviewRoute = LpPreviewRouteImport.update({
+  id: '/lp-preview',
+  path: '/lp-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
   id: '/portal',
   path: '/portal',
@@ -50,6 +56,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/lp-preview': typeof LpPreviewRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
 }
@@ -57,6 +64,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/lp-preview': typeof LpPreviewRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
 }
@@ -66,20 +74,22 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
+  '/lp-preview': typeof LpPreviewRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/auth' | '/portal' | '/lp/$slug'
+  fullPaths: '/' | '/admin' | '/auth' | '/lp-preview' | '/portal' | '/lp/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/auth' | '/portal' | '/lp/$slug'
+  to: '/' | '/admin' | '/auth' | '/lp-preview' | '/portal' | '/lp/$slug'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/admin'
     | '/auth'
+    | '/lp-preview'
     | '/_authenticated/portal'
     | '/lp/$slug'
   fileRoutesById: FileRoutesById
@@ -89,6 +99,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
+  LpPreviewRoute: typeof LpPreviewRoute
   LpSlugRoute: typeof LpSlugRoute
 }
 
@@ -120,6 +131,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lp-preview': {
+      id: '/lp-preview'
+      path: '/lp-preview'
+      fullPath: '/lp-preview'
+      preLoaderRoute: typeof LpPreviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/portal': {
@@ -155,6 +173,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
+  LpPreviewRoute: LpPreviewRoute,
   LpSlugRoute: LpSlugRoute,
 }
 export const routeTree = rootRouteImport
