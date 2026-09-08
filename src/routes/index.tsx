@@ -232,6 +232,28 @@ function AppPage() {
   const [deleteCampaign, setDeleteCampaign] = useState<CampaignRecord | null>(null);
   const [editInfluencer, setEditInfluencer] = useState<InfluencerRecord | null>(null);
   const [deleteInfluencer, setDeleteInfluencer] = useState<InfluencerRecord | null>(null);
+  const [newCredentials, setNewCredentials] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
+  const [resettingId, setResettingId] = useState<string | null>(null);
+
+  const resetPassword = async (row: InfluencerRecord) => {
+    const email = (row as { email?: string | null }).email?.trim();
+    if (!email) {
+      toast.error("Add a login email for this creator first (edit their details).");
+      return;
+    }
+    setResettingId(row.id);
+    try {
+      const res = await resetInfluencerPassword({ data: { email } });
+      setNewCredentials(res);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't reset the password.");
+    } finally {
+      setResettingId(null);
+    }
+  };
   const [busy, setBusy] = useState(false);
 
   const campaignName = (id: string) => campaigns.find((c) => c.id === id)?.name ?? "—";
