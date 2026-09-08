@@ -126,6 +126,121 @@ function PortalPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, counts]);
 
+  const influencerIds = rows.map((r) => r.id);
+  const primaryInfluencerId = influencerIds[0] ?? null;
+
+  const postsQuery = useQuery({
+    queryKey: ["portal", "content-posts", influencerIds.join(",")],
+    enabled: influencerIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("content_posts")
+        .select("*")
+        .in("campaign_influencer_id", influencerIds)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ContentPost[];
+    },
+  });
+
+  useEffect(() => {
+    if (postsQuery.isError) toast.error("Couldn't load your content. Please try again.");
+  }, [postsQuery.isError]);
+
+  const posts = postsQuery.data ?? [];
+  const contentTotals = posts.reduce(
+    (acc, p) => ({
+      views: acc.views + (p.views ?? 0),
+      engagements: acc.engagements + (p.engagements ?? 0),
+      shares: acc.shares + (p.shares ?? 0),
+    }),
+    { views: 0, engagements: 0, shares: 0 },
+  );
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<ContentPost | null>(null);
+  const [deleting, setDeleting] = useState<ContentPost | null>(null);
+  const [form, setForm] = useState({ post_url: "", views: "0", engagements: "0", shares: "0" });
+  const [formError, setFormError] = useState<string>("");
+  const [saving, setSaving] = useState(false);
+
+  const refreshContent = () =>
+    queryClient.invalidateQueries({ queryKey: ["portal", "content-posts"] });
+
+  const openAdd = () => {
+    setEditing(null);
+    setForm({ post_url: "", views: "0", engagements: "0", shares: "0" });
+    setFormError("");
+    setFormOpen(true);
+  };
+
+  const openEdit = (post: ContentPost) => {
+    setEditing(post);
+    setForm({
+      post_url: post.post_url,
+      views: String(post.views ?? 0),
+      engagements: String(post.engagements ?? 0),
+      shares: String(post.shares ?? 0),
+    });
+    setFormError("");
+    setFormOpen(true);
+  };
+
+  const submitPost = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = form.post_url.trim();
+    if (!/^https?:\/\/\S+\.\S+/.test(url)) {
+      setFormError("Enter a valid link starting with http:// or https://");
+      return;
+    }
+    if (!editing && !primaryInfluencerId) return;
+    setSaving(true);
+    try {
+      const values = {
+        post_url: url,
+        views: Number(form.views) || 0,
+        engagements: Number(form.engagements) || 0,
+        shares: Number(form.shares) || 0,
+      };
+      if (editing) {
+        const { error } = await supabase
+          .from("content_posts")
+          .update(values)
+          .eq("id", editing.id);
+        if (error) throw error;
+        toast.success("Content updated");
+      } else {
+        const { error } = await supabase
+          .from("content_posts")
+          .insert({ ...values, campaign_influencer_id: primaryInfluencerId! });
+        if (error) throw error;
+        toast.success("Content added");
+      }
+      setFormOpen(false);
+      refreshContent();
+    } catch {
+      toast.error("Couldn't save your content. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleting) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase.from("content_posts").delete().eq("id", deleting.id);
+      if (error) throw error;
+      toast.success("Content deleted");
+      setDeleting(null);
+      refreshContent();
+    } catch {
+      toast.error("Couldn't delete this content. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const signOut = async () => {
     await queryClient.cancelQueries();
     queryClient.clear();
