@@ -260,6 +260,61 @@ function PortalPage() {
     navigate({ to: "/auth", replace: true });
   };
 
+  // First sign-in: ask the creator to pick their own password.
+  const [pwOpen, setPwOpen] = useState(false);
+  const [pwCurrent, setPwCurrent] = useState("");
+  const [pwNew, setPwNew] = useState("");
+  const [pwConfirm, setPwConfirm] = useState("");
+  const [pwError, setPwError] = useState("");
+  const [pwSaving, setPwSaving] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        const meta = data.user?.user_metadata as { password_changed?: boolean } | undefined;
+        if (active && data.user && meta?.password_changed !== true) setPwOpen(true);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const submitPassword = async () => {
+    setPwError("");
+    if (pwNew.length < 8) {
+      setPwError("Use at least 8 characters.");
+      return;
+    }
+    if (pwNew !== pwConfirm) {
+      setPwError("The two passwords do not match.");
+      return;
+    }
+    setPwSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: pwNew,
+        current_password: pwCurrent || undefined,
+        data: { password_changed: true },
+      } as never);
+      if (error) throw error;
+      toast.success("Password updated");
+      setPwOpen(false);
+      setPwCurrent("");
+      setPwNew("");
+      setPwConfirm("");
+    } catch (e) {
+      setPwError(e instanceof Error ? e.message : "Could not update the password.");
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
+
   const stats = [
     { label: "Content views", value: totals.views.toLocaleString() },
     { label: "Engagements", value: totals.engagements.toLocaleString() },
@@ -562,6 +617,60 @@ function PortalPage() {
 
         )}
       </main>
+
+      <Dialog open={pwOpen} onOpenChange={() => { /* must set a password */ }}>
+        <DialogContent className="[&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle>Choose your password</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Replace the temporary password you were given with one only you know.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="pw-current">Current password</Label>
+              <Input
+                id="pw-current"
+                type="password"
+                value={pwCurrent}
+                onChange={(e) => setPwCurrent(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-new">New password</Label>
+              <Input
+                id="pw-new"
+                type="password"
+                value={pwNew}
+                onChange={(e) => setPwNew(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-confirm">Confirm new password</Label>
+              <Input
+                id="pw-confirm"
+                type="password"
+                value={pwConfirm}
+                onChange={(e) => setPwConfirm(e.target.value)}
+              />
+            </div>
+            {pwError && <p className="text-sm text-red-600">{pwError}</p>}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={signOut} disabled={pwSaving}>
+              Sign out
+            </Button>
+            <Button
+              className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+              onClick={submitPassword}
+              disabled={pwSaving}
+            >
+              {pwSaving ? "Saving…" : "Save password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
