@@ -38,7 +38,7 @@ function LandingPage() {
     queryFn: async () => {
       try {
         const { data, error } = await (supabase.rpc as any)(
-          "get_public_influencer",
+          "get_influencer_by_slug",
           { _slug: slug },
         );
         if (error) throw error;

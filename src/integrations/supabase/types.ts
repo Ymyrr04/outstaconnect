@@ -239,6 +239,13 @@ export type Database = {
     }
     Functions: {
       claim_influencer_access: { Args: never; Returns: number }
+      get_influencer_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          id: string
+          influencer_handle: string
+        }[]
+      }
       get_public_influencer: {
         Args: { _slug: string }
         Returns: {
