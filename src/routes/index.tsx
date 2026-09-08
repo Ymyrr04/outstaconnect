@@ -187,9 +187,20 @@ function Dashboard() {
       }
     },
   });
+  const { data: leadCountsData } = useQuery({
+    queryKey: ["dashboard", "lead-counts"],
+    queryFn: async () => {
+      try {
+        return await getLeadCounts();
+      } catch {
+        return {} as Record<string, number>;
+      }
+    },
+  });
 
   const campaign = data?.campaign ?? null;
   const rows = data?.influencers ?? [];
+
 
   const leadCounts = leadCountsData ?? {};
   const rowLeads = (r: Influencer) => (r.leads ?? 0) + (leadCounts[r.id] ?? 0);
