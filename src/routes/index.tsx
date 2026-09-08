@@ -3,20 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateCampaignDialog } from "@/components/CreateCampaignDialog";
 import { AddInfluencerDialog } from "@/components/AddInfluencerDialog";
 import { toast } from "sonner";
-import {
-  TrendingUp,
-  Calendar,
-  ChevronDown,
-  Users,
-  DollarSign,
-  BarChart3,
-  CheckCircle,
-  Camera,
-  MousePointerClick,
-  UserCheck,
-  ArrowRight,
-  PlusCircle,
-} from "lucide-react";
+import { Calendar, ChevronDown, ArrowRight, PlusCircle, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -85,15 +72,6 @@ const averageDate = (dates: (string | null)[]) => {
   return formatDate(new Date(avg).toISOString());
 };
 
-const initials = (handle: string) =>
-  handle
-    .replace(/^@/, "")
-    .split(/[\s._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]!.toUpperCase())
-    .join("") || "?";
-
 async function fetchDashboard() {
   const { data: campaigns, error: campaignError } = await supabase
     .from("campaigns")
@@ -113,62 +91,6 @@ async function fetchDashboard() {
   if (influencerError) throw influencerError;
 
   return { campaign, influencers: (influencers ?? []) as Influencer[] };
-}
-
-function StatCard({
-  tint,
-  badge,
-  icon,
-  label,
-  value,
-}: {
-  tint: string;
-  badge: string;
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className={`rounded-2xl border border-black/5 p-5 ${tint}`}>
-      <div className={`mb-3 flex h-9 w-9 items-center justify-center rounded-full ${badge}`}>
-        {icon}
-      </div>
-      <p className="text-xs font-medium text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-slate-900">{value}</p>
-    </div>
-  );
-}
-
-function FunnelStep({
-  step,
-  icon,
-  color,
-  label,
-  value,
-  description,
-}: {
-  step: number;
-  icon: React.ReactNode;
-  color: string;
-  label: string;
-  value: string;
-  description: string;
-}) {
-  return (
-    <div className="flex flex-1 flex-col items-center text-center">
-      <div className="relative">
-        <div className={`flex h-14 w-14 items-center justify-center rounded-full ${color}`}>
-          {icon}
-        </div>
-        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-semibold text-white">
-          {step}
-        </span>
-      </div>
-      <p className="mt-3 text-sm font-medium text-slate-700">{label}</p>
-      <p className="text-xl font-semibold text-slate-900">{value}</p>
-      <p className="mt-1 text-xs text-slate-500">{description}</p>
-    </div>
-  );
 }
 
 function statusPill(status: string) {
@@ -205,7 +127,7 @@ function Dashboard() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50">
+      <main className="flex min-h-screen items-center justify-center bg-white">
         <p className="text-sm text-slate-500">Loading dashboard…</p>
       </main>
     );
@@ -213,8 +135,8 @@ function Dashboard() {
 
   if (!campaign) {
     return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-6 text-center">
-        <PlusCircle className="h-12 w-12 text-slate-400" />
+      <main className="flex min-h-screen flex-col items-center justify-center bg-white px-6 text-center">
+        <PlusCircle className="h-12 w-12 text-slate-300" />
         <h1 className="mt-4 text-xl font-semibold text-slate-900">
           No campaign found. Create one to get started.
         </h1>
@@ -226,168 +148,125 @@ function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pb-16">
-      <header className="w-full bg-[#0f2544] px-6 py-8 md:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <main className="min-h-screen bg-white pb-20">
+      <header className="border-b border-slate-200 bg-white px-6 py-8 md:px-10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-white" />
-              <span className="text-lg font-semibold tracking-tight text-white">OutSta</span>
-            </div>
-            <h1 className="mt-4 text-2xl font-semibold text-white md:text-3xl">
+            <h1 className="text-xl font-semibold text-slate-900 md:text-2xl">
               Influencer marketing campaign tracker
             </h1>
-            <p className="mt-1 text-sm text-slate-300">
+            <p className="mt-1 text-sm text-slate-500">
               Track how your influencer content drives real leads and revenue.
             </p>
           </div>
-          <div className="flex items-center gap-2 self-start rounded-full bg-white/10 px-4 py-2 text-sm text-white md:self-auto">
-            <Calendar className="h-4 w-4" />
+          <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 md:self-auto">
+            <Calendar className="h-4 w-4 text-slate-400" />
             <span>
               {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
             </span>
-            <ChevronDown className="h-4 w-4" />
+            <ChevronDown className="h-4 w-4 text-slate-400" />
           </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
-        <section className="-mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          <StatCard
-            tint="bg-blue-50"
-            badge="bg-blue-100"
-            icon={<Users className="h-4 w-4 text-blue-600" />}
-            label="Total Leads"
-            value={totalLeads.toLocaleString()}
-          />
-          <StatCard
-            tint="bg-emerald-50"
-            badge="bg-emerald-100"
-            icon={<DollarSign className="h-4 w-4 text-emerald-600" />}
-            label="Cost Per Lead"
-            value={currency(costPerLead)}
-          />
-          <StatCard
-            tint="bg-purple-50"
-            badge="bg-purple-100"
-            icon={<BarChart3 className="h-4 w-4 text-purple-600" />}
-            label="Potential Revenue Value"
-            value={currency(revenue)}
-          />
-          <StatCard
-            tint="bg-blue-50"
-            badge="bg-blue-100"
-            icon={<Calendar className="h-4 w-4 text-blue-600" />}
-            label="Date Onboarded (avg)"
-            value={averageDate(rows.map((r) => r.date_onboarded))}
-          />
-          <StatCard
-            tint="bg-emerald-50"
-            badge="bg-emerald-100"
-            icon={<CheckCircle className="h-4 w-4 text-emerald-600" />}
-            label="Date Paid (avg)"
-            value={averageDate(rows.map((r) => r.date_paid))}
-          />
+      <div className="mx-auto max-w-7xl px-6 pt-10 md:px-10">
+        <section className="overflow-hidden rounded-xl border border-slate-200 md:grid md:grid-cols-5">
+          {[
+            { label: "Total Leads", value: totalLeads.toLocaleString() },
+            { label: "Cost Per Lead", value: currency(costPerLead) },
+            { label: "Potential Revenue Value", value: currency(revenue) },
+            { label: "Date Onboarded (avg)", value: averageDate(rows.map((r) => r.date_onboarded)) },
+            { label: "Date Paid (avg)", value: averageDate(rows.map((r) => r.date_paid)) },
+          ].map((stat, index) => (
+            <div
+              key={stat.label}
+              className={`flex flex-col items-center justify-center py-6 text-center ${
+                index < 4 ? "border-b border-slate-200 md:border-b-0 md:border-r" : ""
+              }`}
+            >
+              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                {stat.label}
+              </p>
+              <p className="mt-2 text-2xl font-semibold text-slate-900">{stat.value}</p>
+            </div>
+          ))}
         </section>
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-slate-900">Campaign traction flow</h2>
-          <p className="text-sm text-slate-500">From content to leads to revenue.</p>
-          <div className="mt-8 flex flex-col items-center gap-6 md:flex-row md:gap-2">
-            <FunnelStep
-              step={1}
-              color="bg-blue-100"
-              icon={<Camera className="h-6 w-6 text-blue-600" />}
-              label="Content Views"
-              value={views.toLocaleString()}
-              description="People who saw the content"
-            />
-            <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-slate-300 md:rotate-0" />
-            <FunnelStep
-              step={2}
-              color="bg-purple-100"
-              icon={<Users className="h-6 w-6 text-purple-600" />}
-              label="Engagements"
-              value={engagements.toLocaleString()}
-              description="Likes, comments and shares"
-            />
-            <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-slate-300 md:rotate-0" />
-            <FunnelStep
-              step={3}
-              color="bg-amber-100"
-              icon={<MousePointerClick className="h-6 w-6 text-amber-600" />}
-              label="Link Clicks"
-              value={clicks.toLocaleString()}
-              description="Clicks through to your site"
-            />
-            <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-slate-300 md:rotate-0" />
-            <FunnelStep
-              step={4}
-              color="bg-emerald-100"
-              icon={<UserCheck className="h-6 w-6 text-emerald-600" />}
-              label="Leads"
-              value={totalLeads.toLocaleString()}
-              description="Qualified sign-ups captured"
-            />
-            <ArrowRight className="h-5 w-5 shrink-0 rotate-90 text-slate-300 md:rotate-0" />
-            <FunnelStep
-              step={5}
-              color="bg-teal-100"
-              icon={<DollarSign className="h-6 w-6 text-teal-600" />}
-              label="Revenue"
-              value={currency(revenue)}
-              description="Potential value of those leads"
-            />
+        <section className="mt-12">
+          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+            Traction flow
+          </p>
+          <div className="mt-4 flex flex-col items-stretch gap-4 rounded-xl border border-slate-200 px-6 py-8 md:flex-row md:items-center md:justify-between md:gap-2">
+            {[
+              { label: "Content Views", value: views.toLocaleString() },
+              { label: "Engagements", value: engagements.toLocaleString() },
+              { label: "Link Clicks", value: clicks.toLocaleString() },
+              { label: "Leads", value: totalLeads.toLocaleString() },
+              { label: "Revenue", value: currency(revenue) },
+            ].map((step, index) => (
+              <div key={step.label} className="flex items-center gap-4 md:flex-col md:gap-1">
+                {index > 0 && (
+                  <ArrowRight className="hidden h-4 w-4 text-slate-300 md:block" />
+                )}
+                {index > 0 && (
+                  <ArrowRight className="block h-4 w-4 rotate-90 text-slate-300 md:hidden" />
+                )}
+                <div className="flex flex-1 flex-col text-left md:text-center">
+                  <p className="text-2xl font-semibold text-slate-900">{step.value}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                    {step.label}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
-        <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="mt-12">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-slate-900">Campaign details</h2>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+              Campaign details
+            </p>
             <AddInfluencerDialog campaignId={campaign.id} onCreated={refresh} />
           </div>
           {rows.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="mt-4 flex flex-col items-center justify-center rounded-xl border border-slate-200 py-16 text-center">
               <Users className="h-10 w-10 text-slate-300" />
               <p className="mt-3 text-sm font-medium text-slate-600">No influencers added yet</p>
             </div>
           ) : (
-            <div className="mt-4 overflow-x-auto">
+            <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
               <table className="w-full min-w-[900px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
-                    <th className="py-3 pr-4 font-medium">Influencer</th>
-                    <th className="py-3 pr-4 font-medium">Content</th>
-                    <th className="py-3 pr-4 font-medium">Leads</th>
-                    <th className="py-3 pr-4 font-medium">Cost Per Lead</th>
-                    <th className="py-3 pr-4 font-medium">Potential Revenue Value</th>
-                    <th className="py-3 pr-4 font-medium">Date Onboarded</th>
-                    <th className="py-3 pr-4 font-medium">Date Paid</th>
-                    <th className="py-3 pr-4 font-medium">Status</th>
+                    <th className="px-6 py-3 font-medium">Influencer</th>
+                    <th className="px-6 py-3 font-medium">Content</th>
+                    <th className="px-6 py-3 font-medium">Leads</th>
+                    <th className="px-6 py-3 font-medium">Cost Per Lead</th>
+                    <th className="px-6 py-3 font-medium">Potential Revenue Value</th>
+                    <th className="px-6 py-3 font-medium">Date Onboarded</th>
+                    <th className="px-6 py-3 font-medium">Date Paid</th>
+                    <th className="px-6 py-3 font-medium">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((row) => (
-                    <tr key={row.id} className="border-b border-slate-100 last:border-0">
-                      <td className="py-4 pr-4">
-                        <div className="flex items-center gap-3">
-                          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
-                            {initials(row.influencer_handle)}
-                          </span>
-                          <span className="font-medium text-slate-900">
-                            {row.influencer_handle}
-                          </span>
-                        </div>
+                  {rows.map((row, rowIndex) => (
+                    <tr
+                      key={row.id}
+                      className={`${rowIndex < rows.length - 1 ? "border-b border-slate-100" : ""}`}
+                    >
+                      <td className="px-6 py-4 font-medium text-slate-900">
+                        {row.influencer_handle}
                       </td>
-                      <td className="py-4 pr-4 text-slate-600">{row.content_type}</td>
-                      <td className="py-4 pr-4 text-slate-900">{row.leads.toLocaleString()}</td>
-                      <td className="py-4 pr-4 text-slate-600">{currency(row.cost_per_lead)}</td>
-                      <td className="py-4 pr-4 font-medium text-slate-900">
+                      <td className="px-6 py-4 text-slate-600">{row.content_type}</td>
+                      <td className="px-6 py-4 text-slate-900">{row.leads.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-slate-600">{currency(row.cost_per_lead)}</td>
+                      <td className="px-6 py-4 font-medium text-slate-900">
                         {currency(row.leads * row.cost_per_lead)}
                       </td>
-                      <td className="py-4 pr-4 text-slate-600">{formatDate(row.date_onboarded)}</td>
-                      <td className="py-4 pr-4 text-slate-600">{formatDate(row.date_paid)}</td>
-                      <td className="py-4 pr-4">
+                      <td className="px-6 py-4 text-slate-600">{formatDate(row.date_onboarded)}</td>
+                      <td className="px-6 py-4 text-slate-600">{formatDate(row.date_paid)}</td>
+                      <td className="px-6 py-4">
                         <span
                           className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusPill(row.status)}`}
                         >
