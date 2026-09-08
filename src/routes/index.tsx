@@ -220,11 +220,9 @@ function AppPage() {
   ];
 
   const tractionValues = [
-    views.toLocaleString(),
-    engagements.toLocaleString(),
+    rows.length.toLocaleString(),
     clicks.toLocaleString(),
     totalLeads.toLocaleString(),
-    currency(revenue),
   ];
 
   const [campaignFilter, setCampaignFilter] = useState("all");
