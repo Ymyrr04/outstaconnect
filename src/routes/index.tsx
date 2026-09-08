@@ -15,6 +15,7 @@ import {
   FolderPlus,
   Link as LinkIcon,
   ExternalLink,
+  KeyRound,
   Pencil,
   Plus,
   Trash2,
