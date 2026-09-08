@@ -40,6 +40,7 @@ import { CreateCampaignDialog, type CampaignRecord } from "@/components/CreateCa
 import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfluencerDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
+import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
