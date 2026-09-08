@@ -520,7 +520,7 @@ function AppPage() {
                     <tbody>
                       {campaigns.map((c) => {
                         const rowsForCampaign = influencers.filter((i) => i.campaign_id === c.id);
-                        const leads = rowsForCampaign.reduce((sum, r) => sum + (r.leads ?? 0), 0);
+                        const leads = rowsForCampaign.reduce((sum, r) => sum + rowLeads(r), 0);
                         return (
                           <tr key={c.id} className="border-b border-slate-100 last:border-0">
                             <td className="py-4 pr-4 font-medium text-slate-900">{c.name}</td>
@@ -610,7 +610,7 @@ function AppPage() {
                           </td>
                           <td className="py-4 pr-4 text-slate-600">{row.content_type}</td>
                           <td className="py-4 pr-4 text-slate-900">
-                            {row.leads.toLocaleString()}
+                            {rowLeads(row).toLocaleString()}
                           </td>
                           <td className="py-4 pr-4">
                             <span
