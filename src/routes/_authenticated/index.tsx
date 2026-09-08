@@ -177,6 +177,7 @@ function AppPage() {
 
   const { data: leadCountsData } = useQuery({
     queryKey: ["app-data", "lead-counts"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getLeadCounts();
@@ -188,6 +189,7 @@ function AppPage() {
 
   const { data: leadsData, isLoading: leadsLoading } = useQuery({
     queryKey: ["app-data", "leads"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getLeads();
@@ -200,6 +202,7 @@ function AppPage() {
 
   const { data: contentTotalsData } = useQuery({
     queryKey: ["app-data", "content-totals"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getContentTotals();
