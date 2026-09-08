@@ -446,17 +446,12 @@ function AppPage() {
                     </div>
                   ) : (
                     <div className="mt-4 overflow-x-auto">
-                      <table className="w-full min-w-[900px] text-left text-sm">
+                      <table className="w-full min-w-[420px] text-left text-sm">
                         <thead>
                           <tr className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
-                            <th className="rounded-l-lg px-4 py-3 font-medium">Influencer</th>
-                            <th className="px-4 py-3 font-medium">Content</th>
-                            <th className="px-4 py-3 font-medium">Leads</th>
-                            <th className="px-4 py-3 font-medium">Cost Per Lead</th>
-                            <th className="px-4 py-3 font-medium">Potential Revenue Value</th>
-                            <th className="px-4 py-3 font-medium">Date Onboarded</th>
-                            <th className="px-4 py-3 font-medium">Date Paid</th>
-                            <th className="rounded-r-lg px-4 py-3 font-medium">Status</th>
+                            <th className="rounded-l-lg px-4 py-3 font-medium">Influencers / Referrer</th>
+                            <th className="px-4 py-3 font-medium">Link Clicks</th>
+                            <th className="rounded-r-lg px-4 py-3 font-medium">Leads</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -472,28 +467,11 @@ function AppPage() {
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-4 py-3 text-slate-600">{row.content_type}</td>
+                              <td className="px-4 py-3 text-slate-900">
+                                {(row.link_clicks ?? 0).toLocaleString()}
+                              </td>
                               <td className="px-4 py-3 text-slate-900">
                                 {rowLeads(row).toLocaleString()}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {currency(row.cost_per_lead)}
-                              </td>
-                              <td className="px-4 py-3 font-medium text-slate-900">
-                                {currency(rowLeads(row) * row.cost_per_lead)}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {formatDate(row.date_onboarded)}
-                              </td>
-                              <td className="px-4 py-3 text-slate-600">
-                                {formatDate(row.date_paid)}
-                              </td>
-                              <td className="px-4 py-3">
-                                <span
-                                  className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusPill(row.status)}`}
-                                >
-                                  {row.status}
-                                </span>
                               </td>
                             </tr>
                           ))}
