@@ -17,6 +17,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getLeadCounts } from "@/lib/leads.functions";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
