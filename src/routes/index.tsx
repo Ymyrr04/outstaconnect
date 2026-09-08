@@ -290,17 +290,19 @@ function AppPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-100 pb-20">
-      <header className="bg-[#0ABEDF] px-6 py-5 md:px-10">
+    <main className="min-h-screen bg-[#F0FFFE] pb-20">
+      <header className="bg-[#07283F] px-6 py-5 md:px-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <img
-                src={outstaLogoAsset.url}
-                alt="OutSta logo"
-                className="h-8 w-auto"
+            <div className="flex items-center gap-2.5">
+              <div
+                className="h-6 w-6 rounded-full border-[3.5px] border-[#0ABEDF] bg-transparent"
+                aria-label="OutSta logo"
               />
-              <span className="text-xl font-bold tracking-tight text-white">OutSta</span>
+              <span className="text-[15px] font-medium tracking-tight">
+                <span className="text-white">Out</span>
+                <span className="text-[#0ABEDF]">Sta</span>
+              </span>
             </div>
             <div className="hidden h-10 w-px bg-white/30 md:block" />
             <div>
@@ -315,12 +317,12 @@ function AppPage() {
           <div className="flex items-center gap-4">
             <Link
               to="/portal"
-              className="text-sm text-white underline underline-offset-4 hover:text-white/80"
+              className="text-sm text-[#0ABEDF] underline underline-offset-4 hover:text-[#0899B5]"
             >
               Creator portal
             </Link>
             {campaign && (
-              <div className="flex items-center gap-2 self-start rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm text-white md:self-auto">
+              <div className="flex items-center gap-2 self-start rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white md:self-auto">
                 <Calendar className="h-4 w-4 text-white/80" />
                 <span>
                   {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
