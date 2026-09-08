@@ -9,10 +9,6 @@ import {
   PlusCircle,
   Users,
   DollarSign,
-  BarChart3,
-  CheckCircle,
-  Camera,
-  MousePointerClick,
   UserCheck,
   FolderPlus,
   Link as LinkIcon,
@@ -20,7 +16,6 @@ import {
   Plus,
   Trash2,
   TrendingUp,
-
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -115,77 +110,19 @@ async function fetchAppData() {
 }
 
 const stats = [
-  {
-    label: "Total Leads",
-    icon: Users,
-    iconBg: "bg-blue-100 text-blue-600",
-    cardBg: "bg-blue-50/70 border-blue-100",
-  },
-  {
-    label: "Cost Per Lead",
-    sub: "(per lead)",
-    icon: DollarSign,
-    iconBg: "bg-emerald-100 text-emerald-600",
-    cardBg: "bg-emerald-50/70 border-emerald-100",
-  },
-  {
-    label: "Potential Revenue Value",
-    icon: BarChart3,
-    iconBg: "bg-violet-100 text-violet-600",
-    cardBg: "bg-violet-50/70 border-violet-100",
-  },
-  {
-    label: "Date Onboarded",
-    sub: "(per lead)",
-    icon: Calendar,
-    iconBg: "bg-blue-100 text-blue-600",
-    cardBg: "bg-blue-50/70 border-blue-100",
-  },
-  {
-    label: "Date Paid",
-    sub: "(per lead)",
-    icon: CheckCircle,
-    iconBg: "bg-emerald-100 text-emerald-600",
-    cardBg: "bg-emerald-50/70 border-emerald-100",
-  },
+  { label: "Total Leads" },
+  { label: "Cost Per Lead", sub: "(per lead)" },
+  { label: "Potential Revenue Value" },
+  { label: "Date Onboarded", sub: "(per lead)" },
+  { label: "Date Paid", sub: "(per lead)" },
 ];
 
 const tractionSteps = [
-  {
-    label: "Content Views",
-    description: "Total content impressions",
-    icon: Camera,
-    color: "bg-blue-500",
-    badge: "bg-blue-500",
-  },
-  {
-    label: "Engagements",
-    description: "Likes, comments, shares",
-    icon: Users,
-    color: "bg-violet-500",
-    badge: "bg-violet-500",
-  },
-  {
-    label: "Link Clicks",
-    description: "Clicked to landing page",
-    icon: MousePointerClick,
-    color: "bg-emerald-500",
-    badge: "bg-emerald-500",
-  },
-  {
-    label: "Leads",
-    description: "Qualified leads",
-    icon: UserCheck,
-    color: "bg-orange-500",
-    badge: "bg-orange-500",
-  },
-  {
-    label: "Revenue",
-    description: "Potential value",
-    icon: DollarSign,
-    color: "bg-teal-500",
-    badge: "bg-teal-500",
-  },
+  { label: "Content Views", description: "Total content impressions" },
+  { label: "Engagements", description: "Likes, comments, shares" },
+  { label: "Link Clicks", description: "Clicked to landing page" },
+  { label: "Leads", description: "Qualified leads" },
+  { label: "Revenue", description: "Potential value" },
 ];
 
 
@@ -389,33 +326,20 @@ function AppPage() {
               </div>
             ) : (
               <div className="space-y-6 pb-4">
-                <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                  {stats.map((stat, index) => {
-                    const Icon = stat.icon;
-                    return (
-                      <div
-                        key={stat.label}
-                        className={`rounded-xl border p-5 ${stat.cardBg}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${stat.iconBg}`}
-                          >
-                            <Icon className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-slate-700">{stat.label}</p>
-                            {stat.sub && (
-                              <p className="text-[11px] text-slate-400">{stat.sub}</p>
-                            )}
-                          </div>
-                        </div>
-                        <p className="mt-3 text-2xl font-bold text-slate-900">
-                          {statValues[index]}
-                        </p>
-                      </div>
-                    );
-                  })}
+                <section className="flex flex-col divide-y divide-border border sm:flex-row sm:divide-y-0 sm:divide-x">
+                  {stats.map((stat, index) => (
+                    <div key={stat.label} className="flex-1 px-5 py-5">
+                      <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        {stat.label}
+                      </p>
+                      <p className="mt-1 text-2xl font-bold text-foreground">
+                        {statValues[index]}
+                      </p>
+                      {stat.sub && (
+                        <p className="mt-0.5 text-xs text-muted-foreground">{stat.sub}</p>
+                      )}
+                    </div>
+                  ))}
                 </section>
 
                 <section className="rounded-xl border border-slate-200 bg-white px-6 py-6">
@@ -425,39 +349,36 @@ function AppPage() {
                   <p className="mt-0.5 text-xs text-slate-500">
                     From content → to leads → to revenue.
                   </p>
-                  <div className="mt-6 flex flex-col items-stretch gap-6 md:flex-row md:items-start md:justify-between">
+                  <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                     {tractionSteps.map((step, index) => {
-                      const Icon = step.icon;
                       const isLast = index === tractionSteps.length - 1;
+                      const isLeads = index === 3;
+                      const number = String(index + 1).padStart(2, "0");
                       return (
                         <div key={step.label} className="flex flex-1 items-center gap-4">
-                          <div className="flex flex-1 items-center gap-4 md:flex-col md:text-center">
-                            <div
-                              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white ${step.color}`}
+                          <div className={`flex-1 ${isLeads ? "border-l-2 border-primary pl-4" : ""}`}>
+                            <p
+                              className={`text-[11px] font-medium uppercase tracking-wide ${
+                                isLeads ? "text-primary" : "text-muted-foreground"
+                              }`}
                             >
-                              <Icon className="h-6 w-6" />
-                            </div>
-                            <div className="flex flex-col text-left md:items-center md:text-center">
-                              <div className="flex items-center gap-1.5">
-                                <span
-                                  className={`flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white ${step.badge}`}
-                                >
-                                  {index + 1}
-                                </span>
-                                <p className="text-xs font-medium text-slate-600">{step.label}</p>
-                              </div>
-                              <p className="mt-1 text-2xl font-bold text-slate-900">
-                                {tractionValues[index]}
-                              </p>
-                              <p className="mt-0.5 text-[11px] text-slate-400">
-                                {step.description}
-                              </p>
-                            </div>
+                              {number} · {step.label}
+                            </p>
+                            <p
+                              className={`mt-1 text-2xl font-bold ${
+                                isLeads ? "text-primary" : "text-foreground"
+                              }`}
+                            >
+                              {tractionValues[index]}
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">
+                              {step.description}
+                            </p>
                           </div>
                           {!isLast && (
-                            <div className="flex items-center justify-center md:mt-5 md:w-8">
-                              <ArrowRight className="hidden h-5 w-5 text-slate-300 md:block" />
-                              <ArrowRight className="block h-5 w-5 rotate-90 text-slate-300 md:hidden" />
+                            <div className="flex items-center justify-center md:w-8">
+                              <ArrowRight className="hidden h-5 w-5 text-muted-foreground/30 md:block" />
+                              <ArrowRight className="block h-5 w-5 rotate-90 text-muted-foreground/30 md:hidden" />
                             </div>
                           )}
                         </div>
