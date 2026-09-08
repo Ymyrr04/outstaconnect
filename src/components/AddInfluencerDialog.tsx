@@ -42,23 +42,68 @@ const toInt = (v: string) => {
   return Number.isFinite(n) ? n : 0;
 };
 
+export type InfluencerRecord = {
+  id: string;
+  campaign_id: string;
+  influencer_handle: string;
+  content_type: string;
+  leads: number;
+  cost_per_lead: number;
+  date_onboarded: string | null;
+  date_paid: string | null;
+  status: string;
+  content_views: number;
+  engagements: number;
+  link_clicks: number;
+};
+
+const formFrom = (r?: InfluencerRecord) =>
+  r
+    ? {
+        handle: r.influencer_handle,
+        contentType: r.content_type,
+        leads: String(r.leads ?? 0),
+        costPerLead: String(r.cost_per_lead ?? 0),
+        dateOnboarded: r.date_onboarded ?? "",
+        datePaid: r.date_paid ?? "",
+        status: r.status || "Pending",
+        contentViews: String(r.content_views ?? 0),
+        engagements: String(r.engagements ?? 0),
+        linkClicks: String(r.link_clicks ?? 0),
+      }
+    : { ...emptyForm };
+
 export function AddInfluencerDialog({
   campaignId,
   onCreated,
+  influencer,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   campaignId: string;
   onCreated: () => void;
+  influencer?: InfluencerRecord;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
+  };
+  const isEdit = !!influencer;
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ ...emptyForm });
+  const [form, setForm] = useState(() => formFrom(influencer));
   const [errors, setErrors] = useState<Errors>({});
 
   const set = (key: keyof typeof emptyForm, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const reset = () => {
-    setForm({ ...emptyForm });
+    setForm(formFrom(influencer));
     setErrors({});
   };
 
@@ -76,7 +121,7 @@ export function AddInfluencerDialog({
 
     setSaving(true);
     try {
-      const { error } = await supabase.from("campaign_influencers").insert({
+      const payload = {
         campaign_id: campaignId,
         influencer_handle: form.handle.trim(),
         content_type: form.contentType.trim(),
@@ -88,18 +133,26 @@ export function AddInfluencerDialog({
         content_views: toInt(form.contentViews),
         engagements: toInt(form.engagements),
         link_clicks: toInt(form.linkClicks),
-      });
+      };
+      const { error } = isEdit
+        ? await supabase.from("campaign_influencers").update(payload).eq("id", influencer!.id)
+        : await supabase.from("campaign_influencers").insert(payload);
       if (error) throw error;
-      toast.success("Influencer added");
-      reset();
+      toast.success(isEdit ? "Influencer updated" : "Influencer added");
       setOpen(false);
+      if (!isEdit) reset();
       onCreated();
     } catch {
-      toast.error("Couldn't add the influencer. Please try again.");
+      toast.error(
+        isEdit
+          ? "Couldn't update the influencer. Please try again."
+          : "Couldn't add the influencer. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
   };
+
 
   return (
     <Dialog
