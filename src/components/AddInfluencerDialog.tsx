@@ -26,6 +26,7 @@ type Errors = Partial<Record<"handle" | "content_type" | "leads" | "cost_per_lea
 
 const emptyForm = {
   handle: "",
+  slug: "",
   contentType: "",
   leads: "0",
   costPerLead: "0",
@@ -36,6 +37,7 @@ const emptyForm = {
   engagements: "0",
   linkClicks: "0",
 };
+
 
 const toInt = (v: string) => {
   const n = Number.parseInt(v, 10);
