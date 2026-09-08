@@ -175,6 +175,7 @@ function PortalPage() {
   const [form, setForm] = useState({ post_url: "", views: "0", engagements: "0", shares: "0" });
   const [formError, setFormError] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const refreshContent = () =>
     queryClient.invalidateQueries({ queryKey: ["portal", "content-posts"] });
