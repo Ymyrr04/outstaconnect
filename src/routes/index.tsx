@@ -585,8 +585,10 @@ function AppPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                  </div>
                 </div>
               </div>
+
               {isLoading ? (
                 <p className="py-10 text-center text-sm text-slate-500">Loading…</p>
               ) : filteredInfluencers.length === 0 ? (
