@@ -46,7 +46,7 @@ import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
 import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
     meta: [
       { title: "OutSta — Influencer Campaign Tracker" },
