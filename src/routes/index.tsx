@@ -607,7 +607,7 @@ function AppPage() {
                                 onClick={async () => {
                                   try {
                                     await navigator.clipboard.writeText(
-                                      `${window.location.origin}/lp/${row.slug}`,
+                                      publicLandingUrl(row.slug),
                                     );
                                     toast.success("Link copied");
                                   } catch {
