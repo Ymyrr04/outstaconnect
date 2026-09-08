@@ -291,21 +291,23 @@ function AppPage() {
 
   return (
     <main className="min-h-screen bg-slate-100 pb-20">
-      <header className="bg-slate-900 px-6 py-5 md:px-10">
+      <header className="bg-[#0ABEDF] px-6 py-5 md:px-10">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
-                <TrendingUp className="h-4 w-4" />
-              </span>
+              <img
+                src={outstaLogoAsset.url}
+                alt="OutSta logo"
+                className="h-8 w-auto"
+              />
               <span className="text-xl font-bold tracking-tight text-white">OutSta</span>
             </div>
-            <div className="hidden h-10 w-px bg-white/15 md:block" />
+            <div className="hidden h-10 w-px bg-white/30 md:block" />
             <div>
               <h1 className="text-base font-semibold text-white md:text-lg">
                 Influencer Marketing Campaign Tracker
               </h1>
-              <p className="mt-0.5 text-xs text-slate-400">
+              <p className="mt-0.5 text-xs text-white/80">
                 Track how your influencer content drives real leads and revenue.
               </p>
             </div>
@@ -313,22 +315,23 @@ function AppPage() {
           <div className="flex items-center gap-4">
             <Link
               to="/portal"
-              className="text-sm text-slate-300 underline underline-offset-4 hover:text-white"
+              className="text-sm text-white underline underline-offset-4 hover:text-white/80"
             >
               Creator portal
             </Link>
             {campaign && (
-              <div className="flex items-center gap-2 self-start rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-200 md:self-auto">
-                <Calendar className="h-4 w-4 text-slate-400" />
+              <div className="flex items-center gap-2 self-start rounded-lg border border-white/30 bg-white/10 px-4 py-2 text-sm text-white md:self-auto">
+                <Calendar className="h-4 w-4 text-white/80" />
                 <span>
                   {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
                 </span>
-                <ChevronDown className="h-4 w-4 text-slate-400" />
+                <ChevronDown className="h-4 w-4 text-white/80" />
               </div>
             )}
           </div>
         </div>
       </header>
+
 
 
       <div className="mx-auto max-w-7xl px-6 md:px-10">
