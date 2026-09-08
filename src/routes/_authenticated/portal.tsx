@@ -271,11 +271,7 @@ function PortalPage() {
       <header className="bg-[#0ABEDF]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div>
-            <div className="flex items-center gap-2">
-              {/* Replace the placeholder <div> below with an <img src="/logo.png" alt="OutSta logo" className="h-8 w-auto" /> */}
-              <div className="h-8 w-8 min-w-[2rem] rounded bg-gray-200" />
-              <span className="text-sm font-semibold tracking-tight text-white">OutSta</span>
-            </div>
+            <span className="text-sm font-semibold tracking-tight text-white">OutSta</span>
             <h1 className="mt-3 text-lg font-semibold tracking-tight text-white">My results</h1>
             <p className="text-sm text-white/80">{email || "Your creator account"}</p>
           </div>
