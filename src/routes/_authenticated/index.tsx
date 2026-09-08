@@ -325,6 +325,31 @@ function AppPage() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      navigate({ to: "/auth", replace: true });
+    } catch {
+      toast.error("Couldn't sign out. Please try again.");
+    }
+  };
+
+  // While the admin check runs, show a quiet loading state — not the dashboard.
+  if (adminLoading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F0FFFE]">
+        <p className="text-sm text-slate-500">Loading…</p>
+      </main>
+    );
+  }
+
+  // Signed in but not an admin (e.g. an influencer account) → their portal.
+  if (!isAdmin) {
+    return <Navigate to="/portal" replace />;
+  }
+
   return (
     <main className="min-h-screen bg-[#F0FFFE] pb-20">
       <header className="bg-[#07283F] px-6 py-5 md:px-10">
