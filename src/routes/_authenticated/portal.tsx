@@ -617,6 +617,60 @@ function PortalPage() {
 
         )}
       </main>
+
+      <Dialog open={pwOpen} onOpenChange={() => { /* must set a password */ }}>
+        <DialogContent className="[&>button]:hidden">
+          <DialogHeader>
+            <DialogTitle>Choose your password</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Replace the temporary password you were given with one only you know.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="pw-current">Current password</Label>
+              <Input
+                id="pw-current"
+                type="password"
+                value={pwCurrent}
+                onChange={(e) => setPwCurrent(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-new">New password</Label>
+              <Input
+                id="pw-new"
+                type="password"
+                value={pwNew}
+                onChange={(e) => setPwNew(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-confirm">Confirm new password</Label>
+              <Input
+                id="pw-confirm"
+                type="password"
+                value={pwConfirm}
+                onChange={(e) => setPwConfirm(e.target.value)}
+              />
+            </div>
+            {pwError && <p className="text-sm text-red-600">{pwError}</p>}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={signOut} disabled={pwSaving}>
+              Sign out
+            </Button>
+            <Button
+              className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+              onClick={submitPassword}
+              disabled={pwSaving}
+            >
+              {pwSaving ? "Saving…" : "Save password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
