@@ -413,15 +413,26 @@ function PortalPage() {
           </div>
 
 
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Sign out"
-            className="text-white/70 hover:bg-white/10 hover:text-white"
-            onClick={signOut}
-          >
-            <LogOut className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Profile"
+              className="text-white/70 hover:bg-white/10 hover:text-white"
+              onClick={() => setProfileOpen(true)}
+            >
+              <User className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Sign out"
+              className="text-white/70 hover:bg-white/10 hover:text-white"
+              onClick={signOut}
+            >
+              <LogOut className="h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
