@@ -48,6 +48,7 @@ export type InfluencerRecord = {
   id: string;
   campaign_id: string;
   influencer_handle: string;
+  slug: string;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -63,9 +64,11 @@ const formFrom = (r?: InfluencerRecord) =>
   r
     ? {
         handle: r.influencer_handle,
+        slug: r.slug ?? "",
         contentType: r.content_type,
         leads: String(r.leads ?? 0),
         costPerLead: String(r.cost_per_lead ?? 0),
+
         dateOnboarded: r.date_onboarded ?? "",
         datePaid: r.date_paid ?? "",
         status: r.status || "Pending",
