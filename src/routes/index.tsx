@@ -118,41 +118,11 @@ const stats = [
 ];
 
 const tractionSteps = [
-  {
-    label: "Content Views",
-    description: "Total content impressions",
-    icon: Camera,
-    color: "bg-blue-500",
-    badge: "bg-blue-500",
-  },
-  {
-    label: "Engagements",
-    description: "Likes, comments, shares",
-    icon: Users,
-    color: "bg-violet-500",
-    badge: "bg-violet-500",
-  },
-  {
-    label: "Link Clicks",
-    description: "Clicked to landing page",
-    icon: MousePointerClick,
-    color: "bg-emerald-500",
-    badge: "bg-emerald-500",
-  },
-  {
-    label: "Leads",
-    description: "Qualified leads",
-    icon: UserCheck,
-    color: "bg-orange-500",
-    badge: "bg-orange-500",
-  },
-  {
-    label: "Revenue",
-    description: "Potential value",
-    icon: DollarSign,
-    color: "bg-teal-500",
-    badge: "bg-teal-500",
-  },
+  { label: "Content Views", description: "Total content impressions" },
+  { label: "Engagements", description: "Likes, comments, shares" },
+  { label: "Link Clicks", description: "Clicked to landing page" },
+  { label: "Leads", description: "Qualified leads" },
+  { label: "Revenue", description: "Potential value" },
 ];
 
 
