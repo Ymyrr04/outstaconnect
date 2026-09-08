@@ -12,6 +12,7 @@ import {
   UserCheck,
   FolderPlus,
   Link as LinkIcon,
+  ExternalLink,
   Pencil,
   Plus,
   Trash2,
@@ -633,8 +634,18 @@ function AppPage() {
                               {row.status}
                             </span>
                           </td>
-                          <td className="py-4 pr-4">
+                            <td className="py-4 pr-4">
                             <div className="flex items-center gap-2">
+                              <a
+                                href={publicLandingUrl(row.slug)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Open landing page for ${row.influencer_handle}`}
+                                title="View page"
+                                className={iconBtn}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </a>
                               <button
                                 type="button"
                                 aria-label={`Copy landing page link for ${row.influencer_handle}`}
