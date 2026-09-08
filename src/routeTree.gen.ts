@@ -13,6 +13,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as LpPreviewRouteImport } from './routes/lp-preview'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SetupAdminRouteImport } from './routes/setup-admin'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
@@ -35,6 +36,11 @@ const AuthRoute = AuthRouteImport.update({
 const LpPreviewRoute = LpPreviewRouteImport.update({
   id: '/lp-preview',
   path: '/lp-preview',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SetupAdminRoute = SetupAdminRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/lp-preview': typeof LpPreviewRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/lp-preview': typeof LpPreviewRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/lp-preview': typeof LpPreviewRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/setup-admin': typeof SetupAdminRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRoute
   '/lp/$slug': typeof LpSlugRoute
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/lp-preview'
+    | '/reset-password'
     | '/setup-admin'
     | '/portal'
     | '/lp/$slug'
@@ -102,6 +112,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/lp-preview'
+    | '/reset-password'
     | '/setup-admin'
     | '/portal'
     | '/lp/$slug'
@@ -112,6 +123,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/lp-preview'
+    | '/reset-password'
     | '/setup-admin'
     | '/_authenticated/portal'
     | '/lp/$slug'
@@ -123,6 +135,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   LpPreviewRoute: typeof LpPreviewRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SetupAdminRoute: typeof SetupAdminRoute
   LpSlugRoute: typeof LpSlugRoute
 }
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/lp-preview'
       fullPath: '/lp-preview'
       preLoaderRoute: typeof LpPreviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/setup-admin': {
@@ -206,6 +226,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   LpPreviewRoute: LpPreviewRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SetupAdminRoute: SetupAdminRoute,
   LpSlugRoute: LpSlugRoute,
 }
