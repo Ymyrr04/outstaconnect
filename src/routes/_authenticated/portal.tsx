@@ -296,11 +296,18 @@ function PortalPage() {
     }
     setPwSaving(true);
     try {
-      const { error } = await supabase.auth.updateUser({
+      // Try without the temporary password first; some setups don't require it.
+      let { error } = await supabase.auth.updateUser({
         password: pwNew,
-        current_password: pwCurrent || undefined,
         data: { password_changed: true },
       } as never);
+      if (error && /current password/i.test(error.message) && pwCurrent) {
+        ({ error } = await supabase.auth.updateUser({
+          password: pwNew,
+          current_password: pwCurrent,
+          data: { password_changed: true },
+        } as never));
+      }
       if (error) throw error;
       toast.success("Password updated");
       setPwOpen(false);
@@ -763,13 +770,16 @@ function PortalPage() {
               Replace the temporary password you were given with one only you know.
             </p>
             <div className="space-y-2">
-              <Label htmlFor="pw-current">Current password</Label>
+              <Label htmlFor="pw-current">Temporary password (if you have it)</Label>
               <Input
                 id="pw-current"
                 type="password"
                 value={pwCurrent}
                 onChange={(e) => setPwCurrent(e.target.value)}
               />
+              <p className="text-xs text-slate-500">
+                Lost it? Sign out and ask your admin to reset it from the Influencers tab, then sign back in.
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="pw-new">New password</Label>
