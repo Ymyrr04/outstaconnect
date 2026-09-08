@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.claim_influencer_access() FROM anon;
