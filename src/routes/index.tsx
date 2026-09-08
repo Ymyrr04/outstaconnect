@@ -110,39 +110,11 @@ async function fetchAppData() {
 }
 
 const stats = [
-  {
-    label: "Total Leads",
-    icon: Users,
-    iconBg: "bg-blue-100 text-blue-600",
-    cardBg: "bg-blue-50/70 border-blue-100",
-  },
-  {
-    label: "Cost Per Lead",
-    sub: "(per lead)",
-    icon: DollarSign,
-    iconBg: "bg-emerald-100 text-emerald-600",
-    cardBg: "bg-emerald-50/70 border-emerald-100",
-  },
-  {
-    label: "Potential Revenue Value",
-    icon: BarChart3,
-    iconBg: "bg-violet-100 text-violet-600",
-    cardBg: "bg-violet-50/70 border-violet-100",
-  },
-  {
-    label: "Date Onboarded",
-    sub: "(per lead)",
-    icon: Calendar,
-    iconBg: "bg-blue-100 text-blue-600",
-    cardBg: "bg-blue-50/70 border-blue-100",
-  },
-  {
-    label: "Date Paid",
-    sub: "(per lead)",
-    icon: CheckCircle,
-    iconBg: "bg-emerald-100 text-emerald-600",
-    cardBg: "bg-emerald-50/70 border-emerald-100",
-  },
+  { label: "Total Leads" },
+  { label: "Cost Per Lead", sub: "(per lead)" },
+  { label: "Potential Revenue Value" },
+  { label: "Date Onboarded", sub: "(per lead)" },
+  { label: "Date Paid", sub: "(per lead)" },
 ];
 
 const tractionSteps = [
