@@ -70,16 +70,21 @@ export function CreateCampaignDialog({
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("campaigns")
-        .insert({ name: name.trim(), start_date: startDate, end_date: endDate });
+      const payload = { name: name.trim(), start_date: startDate, end_date: endDate };
+      const { error } = isEdit
+        ? await supabase.from("campaigns").update(payload).eq("id", campaign!.id)
+        : await supabase.from("campaigns").insert(payload);
       if (error) throw error;
-      toast.success("Campaign created");
-      reset();
+      toast.success(isEdit ? "Campaign updated" : "Campaign created");
       setOpen(false);
+      if (!isEdit) reset();
       onCreated();
     } catch {
-      toast.error("Couldn't create the campaign. Please try again.");
+      toast.error(
+        isEdit
+          ? "Couldn't update the campaign. Please try again."
+          : "Couldn't create the campaign. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -93,17 +98,28 @@ export function CreateCampaignDialog({
         if (!next) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <PlusCircle className="h-4 w-4" />
-          Create campaign
-        </Button>
-      </DialogTrigger>
+      {trigger !== undefined ? (
+        trigger ? (
+          <DialogTrigger asChild>{trigger}</DialogTrigger>
+        ) : null
+      ) : (
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Create campaign
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create campaign</DialogTitle>
-          <DialogDescription>Set up a new influencer marketing campaign.</DialogDescription>
+          <DialogTitle>{isEdit ? "Edit campaign" : "Create campaign"}</DialogTitle>
+          <DialogDescription>
+            {isEdit
+              ? "Update the details of this campaign."
+              : "Set up a new influencer marketing campaign."}
+          </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div className="space-y-1.5">
             <Label htmlFor="campaign-name">Campaign name</Label>
