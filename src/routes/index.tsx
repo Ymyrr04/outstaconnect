@@ -3,7 +3,19 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CreateCampaignDialog } from "@/components/CreateCampaignDialog";
 import { AddInfluencerDialog } from "@/components/AddInfluencerDialog";
 import { toast } from "sonner";
-import { Calendar, ChevronDown, ArrowRight, PlusCircle, Users } from "lucide-react";
+import {
+  Calendar,
+  ChevronDown,
+  ArrowRight,
+  PlusCircle,
+  Users,
+  DollarSign,
+  BarChart3,
+  CheckCircle,
+  Camera,
+  MousePointerClick,
+  UserCheck,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
@@ -100,6 +112,67 @@ function statusPill(status: string) {
   return "bg-slate-100 text-slate-600";
 }
 
+const stats = [
+  {
+    label: "Total Leads",
+    icon: Users,
+    iconBg: "bg-blue-50 text-blue-600",
+  },
+  {
+    label: "Cost Per Lead",
+    icon: DollarSign,
+    iconBg: "bg-emerald-50 text-emerald-600",
+  },
+  {
+    label: "Potential Revenue Value",
+    icon: BarChart3,
+    iconBg: "bg-violet-50 text-violet-600",
+  },
+  {
+    label: "Date Onboarded (avg)",
+    icon: Calendar,
+    iconBg: "bg-blue-50 text-blue-600",
+  },
+  {
+    label: "Date Paid (avg)",
+    icon: CheckCircle,
+    iconBg: "bg-emerald-50 text-emerald-600",
+  },
+];
+
+const tractionSteps = [
+  {
+    label: "Content Views",
+    description: "Total impressions",
+    icon: Camera,
+    color: "bg-sky-50 text-sky-600 ring-sky-100",
+  },
+  {
+    label: "Engagements",
+    description: "Likes, comments, shares",
+    icon: Users,
+    color: "bg-violet-50 text-violet-600 ring-violet-100",
+  },
+  {
+    label: "Link Clicks",
+    description: "Clicks to landing page",
+    icon: MousePointerClick,
+    color: "bg-amber-50 text-amber-600 ring-amber-100",
+  },
+  {
+    label: "Leads",
+    description: "Captured contacts",
+    icon: UserCheck,
+    color: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+  },
+  {
+    label: "Revenue",
+    description: "Estimated value",
+    icon: DollarSign,
+    color: "bg-rose-50 text-rose-600 ring-rose-100",
+  },
+];
+
 function Dashboard() {
   const queryClient = useQueryClient();
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["dashboard"] });
@@ -124,6 +197,22 @@ function Dashboard() {
   const views = rows.reduce((sum, r) => sum + (r.content_views ?? 0), 0);
   const engagements = rows.reduce((sum, r) => sum + (r.engagements ?? 0), 0);
   const clicks = rows.reduce((sum, r) => sum + (r.link_clicks ?? 0), 0);
+
+  const statValues = [
+    totalLeads.toLocaleString(),
+    currency(costPerLead),
+    currency(revenue),
+    averageDate(rows.map((r) => r.date_onboarded)),
+    averageDate(rows.map((r) => r.date_paid)),
+  ];
+
+  const tractionValues = [
+    views.toLocaleString(),
+    engagements.toLocaleString(),
+    clicks.toLocaleString(),
+    totalLeads.toLocaleString(),
+    currency(revenue),
+  ];
 
   if (isLoading) {
     return (
@@ -171,54 +260,78 @@ function Dashboard() {
 
       <div className="mx-auto max-w-7xl px-6 pt-10 md:px-10">
         <section className="overflow-hidden rounded-xl border border-slate-200 md:grid md:grid-cols-5">
-          {[
-            { label: "Total Leads", value: totalLeads.toLocaleString() },
-            { label: "Cost Per Lead", value: currency(costPerLead) },
-            { label: "Potential Revenue Value", value: currency(revenue) },
-            { label: "Date Onboarded (avg)", value: averageDate(rows.map((r) => r.date_onboarded)) },
-            { label: "Date Paid (avg)", value: averageDate(rows.map((r) => r.date_paid)) },
-          ].map((stat, index) => (
-            <div
-              key={stat.label}
-              className={`flex flex-col items-center justify-center py-6 text-center ${
-                index < 4 ? "border-b border-slate-200 md:border-b-0 md:border-r" : ""
-              }`}
-            >
-              <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                {stat.label}
-              </p>
-              <p className="mt-2 text-2xl font-semibold text-slate-900">{stat.value}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-12">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-            Traction flow
-          </p>
-          <div className="mt-4 flex flex-col items-stretch gap-4 rounded-xl border border-slate-200 px-6 py-8 md:flex-row md:items-center md:justify-between md:gap-2">
-            {[
-              { label: "Content Views", value: views.toLocaleString() },
-              { label: "Engagements", value: engagements.toLocaleString() },
-              { label: "Link Clicks", value: clicks.toLocaleString() },
-              { label: "Leads", value: totalLeads.toLocaleString() },
-              { label: "Revenue", value: currency(revenue) },
-            ].map((step, index) => (
-              <div key={step.label} className="flex items-center gap-4 md:flex-col md:gap-1">
-                {index > 0 && (
-                  <ArrowRight className="hidden h-4 w-4 text-slate-300 md:block" />
-                )}
-                {index > 0 && (
-                  <ArrowRight className="block h-4 w-4 rotate-90 text-slate-300 md:hidden" />
-                )}
-                <div className="flex flex-1 flex-col text-left md:text-center">
-                  <p className="text-2xl font-semibold text-slate-900">{step.value}</p>
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div
+                key={stat.label}
+                className={`flex flex-col items-center justify-center gap-3 py-6 text-center ${
+                  index < 4 ? "border-b border-slate-200 md:border-b-0 md:border-r" : ""
+                }`}
+              >
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${stat.iconBg}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
                   <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                    {step.label}
+                    {stat.label}
+                  </p>
+                  <p className="mt-1 text-2xl font-semibold text-slate-900">
+                    {statValues[index]}
                   </p>
                 </div>
               </div>
-            ))}
+            );
+          })}
+        </section>
+
+        <section className="mt-12">
+          <div className="mb-4">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+              Traction flow
+            </p>
+            <p className="mt-1 text-sm text-slate-500">From content to leads to revenue.</p>
+          </div>
+          <div className="rounded-xl border border-slate-200 bg-white px-6 py-8">
+            <div className="flex flex-col items-stretch gap-6 md:flex-row md:items-center md:justify-between">
+              {tractionSteps.map((step, index) => {
+                const Icon = step.icon;
+                const isLast = index === tractionSteps.length - 1;
+                return (
+                  <div key={step.label} className="flex flex-1 items-center gap-4">
+                    <div className="flex flex-1 items-center gap-4 md:flex-col md:text-center">
+                      <div className="relative">
+                        <div
+                          className={`flex h-12 w-12 items-center justify-center rounded-full ring-1 ${step.color}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-semibold text-white">
+                          {index + 1}
+                        </span>
+                      </div>
+                      <div className="flex flex-col text-left md:items-center md:text-center">
+                        <p className="text-2xl font-semibold text-slate-900">
+                          {tractionValues[index]}
+                        </p>
+                        <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
+                          {step.label}
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-400">{step.description}</p>
+                      </div>
+                    </div>
+                    {!isLast && (
+                      <div className="flex items-center justify-center md:w-8">
+                        <ArrowRight className="hidden h-5 w-5 text-slate-400 md:block" />
+                        <ArrowRight className="block h-5 w-5 rotate-90 text-slate-400 md:hidden" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </section>
 
