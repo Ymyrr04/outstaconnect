@@ -17,20 +17,46 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Errors = Partial<Record<"name" | "start_date" | "end_date", string>>;
 
-export function CreateCampaignDialog({ onCreated }: { onCreated: () => void }) {
-  const [open, setOpen] = useState(false);
+export type CampaignRecord = {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+};
+
+export function CreateCampaignDialog({
+  onCreated,
+  campaign,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+}: {
+  onCreated: () => void;
+  campaign?: CampaignRecord;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
+  };
+  const isEdit = !!campaign;
   const [saving, setSaving] = useState(false);
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [name, setName] = useState(campaign?.name ?? "");
+  const [startDate, setStartDate] = useState(campaign?.start_date ?? "");
+  const [endDate, setEndDate] = useState(campaign?.end_date ?? "");
   const [errors, setErrors] = useState<Errors>({});
 
   const reset = () => {
-    setName("");
-    setStartDate("");
-    setEndDate("");
+    setName(campaign?.name ?? "");
+    setStartDate(campaign?.start_date ?? "");
+    setEndDate(campaign?.end_date ?? "");
     setErrors({});
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
