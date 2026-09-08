@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { TrendingUp, LogOut, Pencil, Trash2, Plus } from "lucide-react";
+import { LogOut, Pencil, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -268,17 +268,23 @@ function PortalPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      <header className="border-b border-slate-200">
+      <header className="bg-[#0ABEDF]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div>
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-slate-900" />
-              <span className="text-sm font-semibold tracking-tight text-slate-900">OutSta</span>
+              {/* Replace the placeholder <div> below with an <img src="/logo.png" alt="OutSta logo" className="h-8 w-auto" /> */}
+              <div className="h-8 w-8 min-w-[2rem] rounded bg-gray-200" />
+              <span className="text-sm font-semibold tracking-tight text-white">OutSta</span>
             </div>
-            <h1 className="mt-3 text-lg font-semibold tracking-tight text-slate-900">My results</h1>
-            <p className="text-sm text-slate-500">{email || "Your creator account"}</p>
+            <h1 className="mt-3 text-lg font-semibold tracking-tight text-white">My results</h1>
+            <p className="text-sm text-white/80">{email || "Your creator account"}</p>
           </div>
-          <Button variant="outline" size="sm" className="gap-2" onClick={signOut}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 border-[#066F85] text-white hover:border-[#0899B5] hover:bg-[#0899B5]"
+            onClick={signOut}
+          >
             <LogOut className="h-4 w-4" />
             Sign out
           </Button>
@@ -299,14 +305,26 @@ function PortalPage() {
         ) : (
           <>
             <div className="grid grid-cols-2 divide-slate-200 rounded-md border border-slate-200 sm:grid-cols-3 lg:grid-cols-5 lg:divide-x">
-              {stats.map((s) => (
-                <div key={s.label} className="px-6 py-6">
-                  <p className="text-[11px] uppercase tracking-wider text-slate-400">{s.label}</p>
-                  <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
-                    {s.value}
-                  </p>
-                </div>
-              ))}
+              {stats.map((s) => {
+                const isLeads = s.label === "Leads";
+                return (
+                  <div
+                    key={s.label}
+                    className={`px-6 py-6 ${isLeads ? "bg-[#0ABEDF]" : "border-l-4 border-l-[#0ABEDF]"}`}
+                  >
+                    <p
+                      className={`text-[11px] uppercase tracking-wider ${isLeads ? "text-white/80" : "text-slate-400"}`}
+                    >
+                      {s.label}
+                    </p>
+                    <p
+                      className={`mt-2 text-2xl font-semibold tracking-tight ${isLeads ? "text-white" : "text-slate-900"}`}
+                    >
+                      {s.value}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
 
             <p className="mt-12 text-[11px] uppercase tracking-wider text-slate-400">
@@ -361,13 +379,17 @@ function PortalPage() {
             <section className="mt-14">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] uppercase tracking-wider text-slate-400">Your content</p>
-                <Button size="sm" variant="outline" className="gap-2" onClick={openAdd}>
+                <Button
+                  size="sm"
+                  className="gap-2 bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                  onClick={openAdd}
+                >
                   <Plus className="h-4 w-4" />
                   Add content
                 </Button>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 divide-slate-200 rounded-md border border-slate-200 sm:grid-cols-3 sm:divide-x">
+              <div className="mt-4 grid grid-cols-1 divide-slate-200 rounded-md border border-[#0ABEDF] sm:grid-cols-3 sm:divide-x">
                 {[
                   { n: "01", label: "Total views", value: contentTotals.views },
                   { n: "02", label: "Total engagements", value: contentTotals.engagements },
@@ -375,7 +397,11 @@ function PortalPage() {
                 ].map((s) => (
                   <div key={s.label} className="px-6 py-6">
                     <p className="text-[11px] uppercase tracking-wider text-slate-400">
-                      {s.n} · {s.label}
+                      <span className="rounded bg-[#E0F7FC] px-1.5 py-0.5 text-[#066F85]">
+                        {s.n}
+                      </span>
+                      {" · "}
+                      {s.label}
                     </p>
                     <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
                       {s.value.toLocaleString()}
