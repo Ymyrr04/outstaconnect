@@ -602,6 +602,9 @@ function AppPage() {
                           <td className="py-4 pr-4 text-slate-900">
                             {rowLeads(row).toLocaleString()}
                           </td>
+                          <td className="py-4 pr-4 text-slate-600">
+                            {rowShares(row).toLocaleString()}
+                          </td>
                           <td className="py-4 pr-4">
                             <span
                               className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusPill(row.status)}`}
