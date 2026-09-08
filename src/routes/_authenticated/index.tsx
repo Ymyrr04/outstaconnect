@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { publicLandingUrl } from "@/lib/public-url";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import {
   Link as LinkIcon,
   ExternalLink,
   KeyRound,
+  LogOut,
   Pencil,
   Plus,
   Trash2,
@@ -45,6 +46,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
 import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
+import { checkIsAdmin } from "@/lib/admin-setup.functions";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
@@ -138,6 +140,7 @@ const iconBtn =
   "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900";
 
 function AppPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: ["app-data"] });
@@ -145,8 +148,23 @@ function AppPage() {
 
   const [activeTab, setActiveTab] = useState("dashboard");
 
+  // Admin gate: only confirmed admins see the dashboard; everyone else goes to /portal.
+  const { data: adminData, isLoading: adminLoading } = useQuery({
+    queryKey: ["is-admin"],
+    queryFn: async () => {
+      try {
+        return await checkIsAdmin();
+      } catch {
+        return { isAdmin: false };
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const isAdmin = adminData?.isAdmin === true;
+
   const { data, isLoading } = useQuery({
     queryKey: ["app-data"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await fetchAppData();
@@ -159,6 +177,7 @@ function AppPage() {
 
   const { data: leadCountsData } = useQuery({
     queryKey: ["app-data", "lead-counts"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getLeadCounts();
@@ -170,6 +189,7 @@ function AppPage() {
 
   const { data: leadsData, isLoading: leadsLoading } = useQuery({
     queryKey: ["app-data", "leads"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getLeads();
@@ -182,6 +202,7 @@ function AppPage() {
 
   const { data: contentTotalsData } = useQuery({
     queryKey: ["app-data", "content-totals"],
+    enabled: isAdmin,
     queryFn: async () => {
       try {
         return await getContentTotals();
@@ -304,6 +325,31 @@ function AppPage() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      await supabase.auth.signOut();
+      navigate({ to: "/auth", replace: true });
+    } catch {
+      toast.error("Couldn't sign out. Please try again.");
+    }
+  };
+
+  // While the admin check runs, show a quiet loading state — not the dashboard.
+  if (adminLoading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F0FFFE]">
+        <p className="text-sm text-slate-500">Loading…</p>
+      </main>
+    );
+  }
+
+  // Signed in but not an admin (e.g. an influencer account) → their portal.
+  if (!isAdmin) {
+    return <Navigate to="/portal" replace />;
+  }
+
   return (
     <main className="min-h-screen bg-[#F0FFFE] pb-20">
       <header className="bg-[#07283F] px-6 py-5 md:px-10">
@@ -329,15 +375,26 @@ function AppPage() {
               </p>
             </div>
           </div>
-          {campaign && (
-            <div className="flex items-center gap-2 self-start rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white md:self-auto">
-              <Calendar className="h-4 w-4 text-white/80" />
-              <span>
-                {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
-              </span>
-              <ChevronDown className="h-4 w-4 text-white/80" />
-            </div>
-          )}
+          <div className="flex items-center gap-2 self-start md:self-auto">
+            {campaign && (
+              <div className="flex items-center gap-2 rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white">
+                <Calendar className="h-4 w-4 text-white/80" />
+                <span>
+                  {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
+                </span>
+                <ChevronDown className="h-4 w-4 text-white/80" />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              title="Sign out"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </header>
 

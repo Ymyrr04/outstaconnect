@@ -1,4 +1,20 @@
 import { createServerFn } from "@tanstack/react-start";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+// Returns true only when the signed-in user is listed in admin_users.
+// admin_users has no client-readable RLS, so the membership check uses the service role.
+export const checkIsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { count, error } = await supabaseAdmin
+      .from("admin_users")
+      .select("user_id", { count: "exact", head: true })
+      .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { isAdmin: (count ?? 0) > 0 };
+  });
+
 
 export const getAdminSetupStatus = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
