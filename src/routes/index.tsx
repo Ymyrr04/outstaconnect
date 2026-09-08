@@ -42,7 +42,7 @@ import {
 import { CreateCampaignDialog, type CampaignRecord } from "@/components/CreateCampaignDialog";
 import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfluencerDialog";
 import { supabase } from "@/integrations/supabase/client";
-import { getLeadCounts } from "@/lib/leads.functions";
+import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -188,6 +188,18 @@ function AppPage() {
     },
   });
 
+  const { data: leadsData, isLoading: leadsLoading } = useQuery({
+    queryKey: ["app-data", "leads"],
+    queryFn: async () => {
+      try {
+        return await getLeads();
+      } catch {
+        return [];
+      }
+    },
+  });
+  const leadsList = leadsData ?? [];
+
   const campaigns = data?.campaigns ?? [];
   const influencers = data?.influencers ?? [];
   const campaign = campaigns[0] ?? null;
@@ -313,6 +325,7 @@ function AppPage() {
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="influencers">Influencers</TabsTrigger>
+            <TabsTrigger value="leads">Leads</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
