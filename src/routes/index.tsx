@@ -15,9 +15,9 @@ import {
   Pencil,
   Plus,
   Trash2,
-  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import outstaLogoAsset from "@/assets/outsta-logo.png.asset.json";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -451,7 +451,7 @@ function AppPage() {
                             <tr key={row.id} className="border-b border-slate-100 last:border-b-0">
                               <td className="px-4 py-3">
                                 <div className="flex items-center gap-3">
-                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
+                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0ABEDF] text-xs font-semibold text-white">
                                     {row.influencer_handle.replace(/^@/, "").charAt(0).toUpperCase()}
                                   </span>
                                   <span className="font-medium text-slate-900">
