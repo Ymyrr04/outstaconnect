@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slug";
+
 
 type Errors = Partial<Record<"handle" | "content_type" | "leads" | "cost_per_lead", string>>;
 
