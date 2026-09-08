@@ -21,7 +21,7 @@ import {
   type LandingSettings,
 } from "@/components/LandingPageBody";
 import { fetchLandingSettings, saveLandingSettings } from "@/lib/landing-settings";
-import { publicLandingUrl } from "@/lib/slug";
+import { publicLandingUrl } from "@/lib/public-url";
 
 export const Route = createFileRoute("/lp-preview")({
   head: () => ({

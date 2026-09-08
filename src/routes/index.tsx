@@ -129,15 +129,8 @@ const tractionSteps = [
 
 const thClass = "py-3 pr-4 font-medium";
 
-const PUBLIC_SITE_URL = "https://outstaconnect.lovable.app";
 
-// Preview/editor hosts require a login, so always share the public site link.
-const publicLandingUrl = (slug: string) => {
-  const origin = typeof window !== "undefined" ? window.location.origin : "";
-  const isPrivateHost =
-    origin.includes("lovableproject.com") || origin.includes("-preview--") || origin.includes("localhost");
-  return `${isPrivateHost || !origin ? PUBLIC_SITE_URL : origin}/lp/${slug}`;
-};
+
 
 const iconBtn =
   "inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900";
