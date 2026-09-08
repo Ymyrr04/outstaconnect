@@ -23,6 +23,7 @@ export const createInfluencerAccount = createServerFn({ method: "POST" })
       email,
       password,
       email_confirm: true,
+      user_metadata: { password_changed: false },
     });
 
     if (error) {
@@ -65,6 +66,7 @@ export const resetInfluencerPassword = createServerFn({ method: "POST" })
         email,
         password,
         email_confirm: true,
+        user_metadata: { password_changed: false },
       });
       if (error) throw error;
       return { email, password };
@@ -73,6 +75,7 @@ export const resetInfluencerPassword = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
       password,
       email_confirm: true,
+      user_metadata: { password_changed: false },
     });
     if (error) throw error;
     return { email, password };
