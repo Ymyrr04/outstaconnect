@@ -375,15 +375,26 @@ function AppPage() {
               </p>
             </div>
           </div>
-          {campaign && (
-            <div className="flex items-center gap-2 self-start rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white md:self-auto">
-              <Calendar className="h-4 w-4 text-white/80" />
-              <span>
-                {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
-              </span>
-              <ChevronDown className="h-4 w-4 text-white/80" />
-            </div>
-          )}
+          <div className="flex items-center gap-2 self-start md:self-auto">
+            {campaign && (
+              <div className="flex items-center gap-2 rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white">
+                <Calendar className="h-4 w-4 text-white/80" />
+                <span>
+                  {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
+                </span>
+                <ChevronDown className="h-4 w-4 text-white/80" />
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={handleSignOut}
+              aria-label="Sign out"
+              title="Sign out"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </header>
 
