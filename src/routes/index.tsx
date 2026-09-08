@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -314,23 +314,15 @@ function AppPage() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Link
-              to="/portal"
-              className="text-sm text-[#0ABEDF] underline underline-offset-4 hover:text-[#0899B5]"
-            >
-              Creator portal
-            </Link>
-            {campaign && (
-              <div className="flex items-center gap-2 self-start rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white md:self-auto">
-                <Calendar className="h-4 w-4 text-white/80" />
-                <span>
-                  {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
-                </span>
-                <ChevronDown className="h-4 w-4 text-white/80" />
-              </div>
-            )}
-          </div>
+          {campaign && (
+            <div className="flex items-center gap-2 self-start rounded-lg border border-white/[0.15] bg-white/[0.06] px-4 py-2 text-sm text-white md:self-auto">
+              <Calendar className="h-4 w-4 text-white/80" />
+              <span>
+                {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
+              </span>
+              <ChevronDown className="h-4 w-4 text-white/80" />
+            </div>
+          )}
         </div>
       </header>
 
