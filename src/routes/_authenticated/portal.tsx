@@ -347,7 +347,176 @@ function PortalPage() {
                 </tbody>
               </table>
             </div>
+
+            <section className="mt-14">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] uppercase tracking-wider text-slate-400">Your content</p>
+                <Button size="sm" variant="outline" className="gap-2" onClick={openAdd}>
+                  <Plus className="h-4 w-4" />
+                  Add content
+                </Button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 divide-slate-200 rounded-md border border-slate-200 sm:grid-cols-3 sm:divide-x">
+                {[
+                  { n: "01", label: "Total views", value: contentTotals.views },
+                  { n: "02", label: "Total engagements", value: contentTotals.engagements },
+                  { n: "03", label: "Total shares", value: contentTotals.shares },
+                ].map((s) => (
+                  <div key={s.label} className="px-6 py-6">
+                    <p className="text-[11px] uppercase tracking-wider text-slate-400">
+                      {s.n} · {s.label}
+                    </p>
+                    <p className="mt-2 text-2xl font-semibold tracking-tight text-slate-900">
+                      {s.value.toLocaleString()}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              {posts.length === 0 ? (
+                <div className="mt-4 rounded-md border border-slate-200 p-10 text-center">
+                  <p className="text-sm font-medium text-slate-900">No content added yet</p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Use “Add content” to submit the link to your first post and its numbers.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4 overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-left text-[11px] uppercase tracking-wider text-slate-400">
+                        <th className="py-3 pr-4 font-medium">Post link</th>
+                        <th className="py-3 pr-4 font-medium">Views</th>
+                        <th className="py-3 pr-4 font-medium">Engagements</th>
+                        <th className="py-3 pr-4 font-medium">Shares</th>
+                        <th className="py-3 font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {posts.map((p) => (
+                        <tr key={p.id} className="border-b border-slate-100">
+                          <td className="max-w-xs truncate py-4 pr-4">
+                            <a
+                              href={p.post_url}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              className="text-slate-900 underline underline-offset-4"
+                            >
+                              {p.post_url}
+                            </a>
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">
+                            {(p.views ?? 0).toLocaleString()}
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">
+                            {(p.engagements ?? 0).toLocaleString()}
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">
+                            {(p.shares ?? 0).toLocaleString()}
+                          </td>
+                          <td className="py-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                aria-label="Edit content post"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                                onClick={() => openEdit(p)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label="Delete content post"
+                                className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+                                onClick={() => setDeleting(p)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+
+            <Dialog open={formOpen} onOpenChange={setFormOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{editing ? "Edit content" : "Add content"}</DialogTitle>
+                </DialogHeader>
+                <form onSubmit={submitPost} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="post-url">Post link</Label>
+                    <Input
+                      id="post-url"
+                      type="url"
+                      placeholder="https://instagram.com/p/…"
+                      value={form.post_url}
+                      onChange={(e) => setForm({ ...form, post_url: e.target.value })}
+                    />
+                    {formError && <p className="text-xs text-destructive">{formError}</p>}
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="post-views">Views</Label>
+                      <Input
+                        id="post-views"
+                        type="number"
+                        min={0}
+                        value={form.views}
+                        onChange={(e) => setForm({ ...form, views: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="post-engagements">Engagements</Label>
+                      <Input
+                        id="post-engagements"
+                        type="number"
+                        min={0}
+                        value={form.engagements}
+                        onChange={(e) => setForm({ ...form, engagements: e.target.value })}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="post-shares">Shares</Label>
+                      <Input
+                        id="post-shares"
+                        type="number"
+                        min={0}
+                        value={form.shares}
+                        onChange={(e) => setForm({ ...form, shares: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" disabled={saving}>
+                      {saving ? "Saving…" : editing ? "Save changes" : "Add content"}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            <AlertDialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this content post?</AlertDialogTitle>
+                  <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={saving}>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmDelete} disabled={saving}>
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
+
         )}
       </main>
     </div>
