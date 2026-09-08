@@ -217,6 +217,22 @@ export function AddInfluencerDialog({
                 onChange={(e) => set("slug", e.target.value)}
               />
             </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="influencer-email">Creator login email</Label>
+              <Input
+                id="influencer-email"
+                type="email"
+                value={form.email}
+                maxLength={120}
+                placeholder="creator@email.com"
+                onChange={(e) => set("email", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                They sign in with this email to see their own results.
+              </p>
+            </div>
+
+
 
             <div className="space-y-1.5">
               <Label htmlFor="content-type">Content type</Label>
