@@ -162,17 +162,26 @@ export function AddInfluencerDialog({
         if (!next) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <UserPlus className="h-4 w-4" />
-          Add influencer
-        </Button>
-      </DialogTrigger>
+      {trigger !== undefined ? (
+        trigger ? (
+          <DialogTrigger asChild>{trigger}</DialogTrigger>
+        ) : null
+      ) : (
+        <DialogTrigger asChild>
+          <Button size="sm" className="gap-2">
+            <UserPlus className="h-4 w-4" />
+            Add influencer
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Add influencer</DialogTitle>
-          <DialogDescription>Record a creator and their results for this campaign.</DialogDescription>
+          <DialogTitle>{isEdit ? "Edit influencer" : "Add influencer"}</DialogTitle>
+          <DialogDescription>
+            Record a creator and their results for this campaign.
+          </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
