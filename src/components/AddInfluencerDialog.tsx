@@ -29,6 +29,7 @@ type Errors = Partial<Record<"handle" | "content_type" | "leads" | "cost_per_lea
 const emptyForm = {
   handle: "",
   slug: "",
+  email: "",
   contentType: "",
   leads: "0",
   costPerLead: "0",
