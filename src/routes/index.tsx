@@ -19,6 +19,8 @@ import {
   Pencil,
   Plus,
   Trash2,
+  TrendingUp,
+
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -113,45 +115,79 @@ async function fetchAppData() {
 }
 
 const stats = [
-  { label: "Total Leads", icon: Users, iconBg: "bg-blue-50 text-blue-600" },
-  { label: "Cost Per Lead", icon: DollarSign, iconBg: "bg-emerald-50 text-emerald-600" },
-  { label: "Potential Revenue Value", icon: BarChart3, iconBg: "bg-violet-50 text-violet-600" },
-  { label: "Date Onboarded (avg)", icon: Calendar, iconBg: "bg-blue-50 text-blue-600" },
-  { label: "Date Paid (avg)", icon: CheckCircle, iconBg: "bg-emerald-50 text-emerald-600" },
+  {
+    label: "Total Leads",
+    icon: Users,
+    iconBg: "bg-blue-100 text-blue-600",
+    cardBg: "bg-blue-50/70 border-blue-100",
+  },
+  {
+    label: "Cost Per Lead",
+    sub: "(per lead)",
+    icon: DollarSign,
+    iconBg: "bg-emerald-100 text-emerald-600",
+    cardBg: "bg-emerald-50/70 border-emerald-100",
+  },
+  {
+    label: "Potential Revenue Value",
+    icon: BarChart3,
+    iconBg: "bg-violet-100 text-violet-600",
+    cardBg: "bg-violet-50/70 border-violet-100",
+  },
+  {
+    label: "Date Onboarded",
+    sub: "(per lead)",
+    icon: Calendar,
+    iconBg: "bg-blue-100 text-blue-600",
+    cardBg: "bg-blue-50/70 border-blue-100",
+  },
+  {
+    label: "Date Paid",
+    sub: "(per lead)",
+    icon: CheckCircle,
+    iconBg: "bg-emerald-100 text-emerald-600",
+    cardBg: "bg-emerald-50/70 border-emerald-100",
+  },
 ];
 
 const tractionSteps = [
   {
     label: "Content Views",
-    description: "Total impressions",
+    description: "Total content impressions",
     icon: Camera,
-    color: "bg-sky-50 text-sky-600 ring-sky-100",
+    color: "bg-blue-500",
+    badge: "bg-blue-500",
   },
   {
     label: "Engagements",
     description: "Likes, comments, shares",
     icon: Users,
-    color: "bg-violet-50 text-violet-600 ring-violet-100",
+    color: "bg-violet-500",
+    badge: "bg-violet-500",
   },
   {
     label: "Link Clicks",
-    description: "Clicks to landing page",
+    description: "Clicked to landing page",
     icon: MousePointerClick,
-    color: "bg-amber-50 text-amber-600 ring-amber-100",
+    color: "bg-emerald-500",
+    badge: "bg-emerald-500",
   },
   {
     label: "Leads",
-    description: "Captured contacts",
+    description: "Qualified leads",
     icon: UserCheck,
-    color: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+    color: "bg-orange-500",
+    badge: "bg-orange-500",
   },
   {
     label: "Revenue",
-    description: "Estimated value",
+    description: "Potential value",
     icon: DollarSign,
-    color: "bg-rose-50 text-rose-600 ring-rose-100",
+    color: "bg-teal-500",
+    badge: "bg-teal-500",
   },
 ];
+
 
 const thClass = "py-3 pr-4 font-medium";
 const iconBtn =
@@ -288,26 +324,35 @@ function AppPage() {
   };
 
   return (
-    <main className="min-h-screen bg-white pb-20">
-      <header className="border-b border-slate-200 bg-white px-6 py-8 md:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h1 className="text-xl font-semibold text-slate-900 md:text-2xl">
-              Influencer marketing campaign tracker
-            </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Track how your influencer content drives real leads and revenue.
-            </p>
+    <main className="min-h-screen bg-slate-100 pb-20">
+      <header className="bg-slate-900 px-6 py-5 md:px-10">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-5">
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500 text-white">
+                <TrendingUp className="h-4 w-4" />
+              </span>
+              <span className="text-xl font-bold tracking-tight text-white">OutSta</span>
+            </div>
+            <div className="hidden h-10 w-px bg-white/15 md:block" />
+            <div>
+              <h1 className="text-base font-semibold text-white md:text-lg">
+                Influencer Marketing Campaign Tracker
+              </h1>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Track how your influencer content drives real leads and revenue.
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <Link
               to="/portal"
-              className="text-sm text-slate-500 underline underline-offset-4 hover:text-slate-900"
+              className="text-sm text-slate-300 underline underline-offset-4 hover:text-white"
             >
               Creator portal
             </Link>
             {campaign && (
-              <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 md:self-auto">
+              <div className="flex items-center gap-2 self-start rounded-lg border border-white/15 bg-white/5 px-4 py-2 text-sm text-slate-200 md:self-auto">
                 <Calendar className="h-4 w-4 text-slate-400" />
                 <span>
                   {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
@@ -318,6 +363,7 @@ function AppPage() {
           </div>
         </div>
       </header>
+
 
       <div className="mx-auto max-w-7xl px-6 md:px-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="pt-6">
@@ -342,92 +388,87 @@ function AppPage() {
                 </div>
               </div>
             ) : (
-              <div className="space-y-12">
-                <section className="overflow-hidden rounded-xl border border-slate-200 md:grid md:grid-cols-5">
+              <div className="space-y-6 pb-4">
+                <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                   {stats.map((stat, index) => {
                     const Icon = stat.icon;
                     return (
                       <div
                         key={stat.label}
-                        className={`flex flex-col items-center justify-center gap-3 py-6 text-center ${
-                          index < 4 ? "border-b border-slate-200 md:border-b-0 md:border-r" : ""
-                        }`}
+                        className={`rounded-xl border p-5 ${stat.cardBg}`}
                       >
-                        <div
-                          className={`flex h-10 w-10 items-center justify-center rounded-full ${stat.iconBg}`}
-                        >
-                          <Icon className="h-5 w-5" />
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${stat.iconBg}`}
+                          >
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-slate-700">{stat.label}</p>
+                            {stat.sub && (
+                              <p className="text-[11px] text-slate-400">{stat.sub}</p>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                            {stat.label}
-                          </p>
-                          <p className="mt-1 text-2xl font-semibold text-slate-900">
-                            {statValues[index]}
-                          </p>
-                        </div>
+                        <p className="mt-3 text-2xl font-bold text-slate-900">
+                          {statValues[index]}
+                        </p>
                       </div>
                     );
                   })}
                 </section>
 
-                <section>
-                  <div className="mb-4">
-                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                      Traction flow
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      From content to leads to revenue.
-                    </p>
-                  </div>
-                  <div className="rounded-xl border border-slate-200 bg-white px-6 py-8">
-                    <div className="flex flex-col items-stretch gap-6 md:flex-row md:items-center md:justify-between">
-                      {tractionSteps.map((step, index) => {
-                        const Icon = step.icon;
-                        const isLast = index === tractionSteps.length - 1;
-                        return (
-                          <div key={step.label} className="flex flex-1 items-center gap-4">
-                            <div className="flex flex-1 items-center gap-4 md:flex-col md:text-center">
-                              <div className="relative">
-                                <div
-                                  className={`flex h-12 w-12 items-center justify-center rounded-full ring-1 ${step.color}`}
+                <section className="rounded-xl border border-slate-200 bg-white px-6 py-6">
+                  <h2 className="text-base font-semibold text-slate-900">
+                    Campaign Traction Flow
+                  </h2>
+                  <p className="mt-0.5 text-xs text-slate-500">
+                    From content → to leads → to revenue.
+                  </p>
+                  <div className="mt-6 flex flex-col items-stretch gap-6 md:flex-row md:items-start md:justify-between">
+                    {tractionSteps.map((step, index) => {
+                      const Icon = step.icon;
+                      const isLast = index === tractionSteps.length - 1;
+                      return (
+                        <div key={step.label} className="flex flex-1 items-center gap-4">
+                          <div className="flex flex-1 items-center gap-4 md:flex-col md:text-center">
+                            <div
+                              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-white ${step.color}`}
+                            >
+                              <Icon className="h-6 w-6" />
+                            </div>
+                            <div className="flex flex-col text-left md:items-center md:text-center">
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold text-white ${step.badge}`}
                                 >
-                                  <Icon className="h-5 w-5" />
-                                </div>
-                                <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-[10px] font-semibold text-white">
                                   {index + 1}
                                 </span>
+                                <p className="text-xs font-medium text-slate-600">{step.label}</p>
                               </div>
-                              <div className="flex flex-col text-left md:items-center md:text-center">
-                                <p className="text-2xl font-semibold text-slate-900">
-                                  {tractionValues[index]}
-                                </p>
-                                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                                  {step.label}
-                                </p>
-                                <p className="mt-0.5 text-xs text-slate-400">
-                                  {step.description}
-                                </p>
-                              </div>
+                              <p className="mt-1 text-2xl font-bold text-slate-900">
+                                {tractionValues[index]}
+                              </p>
+                              <p className="mt-0.5 text-[11px] text-slate-400">
+                                {step.description}
+                              </p>
                             </div>
-                            {!isLast && (
-                              <div className="flex items-center justify-center md:w-8">
-                                <ArrowRight className="hidden h-5 w-5 text-slate-400 md:block" />
-                                <ArrowRight className="block h-5 w-5 rotate-90 text-slate-400 md:hidden" />
-                              </div>
-                            )}
                           </div>
-                        );
-                      })}
-                    </div>
+                          {!isLast && (
+                            <div className="flex items-center justify-center md:mt-5 md:w-8">
+                              <ArrowRight className="hidden h-5 w-5 text-slate-300 md:block" />
+                              <ArrowRight className="block h-5 w-5 rotate-90 text-slate-300 md:hidden" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </section>
 
-                <section>
+                <section className="rounded-xl border border-slate-200 bg-white p-6">
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">
-                      Campaign details
-                    </p>
+                    <h2 className="text-base font-semibold text-slate-900">Campaign Details</h2>
                     <AddInfluencerDialog campaignId={campaign.id} onCreated={refresh} />
                   </div>
                   {rows.length === 0 ? (
@@ -438,48 +479,50 @@ function AppPage() {
                       </p>
                     </div>
                   ) : (
-                    <div className="mt-4 overflow-x-auto rounded-xl border border-slate-200">
+                    <div className="mt-4 overflow-x-auto">
                       <table className="w-full min-w-[900px] text-left text-sm">
                         <thead>
-                          <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
-                            <th className="px-6 py-3 font-medium">Influencer</th>
-                            <th className="px-6 py-3 font-medium">Content</th>
-                            <th className="px-6 py-3 font-medium">Leads</th>
-                            <th className="px-6 py-3 font-medium">Cost Per Lead</th>
-                            <th className="px-6 py-3 font-medium">Potential Revenue Value</th>
-                            <th className="px-6 py-3 font-medium">Date Onboarded</th>
-                            <th className="px-6 py-3 font-medium">Date Paid</th>
-                            <th className="px-6 py-3 font-medium">Status</th>
+                          <tr className="bg-slate-50 text-[11px] uppercase tracking-wide text-slate-500">
+                            <th className="rounded-l-lg px-4 py-3 font-medium">Influencer</th>
+                            <th className="px-4 py-3 font-medium">Content</th>
+                            <th className="px-4 py-3 font-medium">Leads</th>
+                            <th className="px-4 py-3 font-medium">Cost Per Lead</th>
+                            <th className="px-4 py-3 font-medium">Potential Revenue Value</th>
+                            <th className="px-4 py-3 font-medium">Date Onboarded</th>
+                            <th className="px-4 py-3 font-medium">Date Paid</th>
+                            <th className="rounded-r-lg px-4 py-3 font-medium">Status</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {rows.map((row, rowIndex) => (
-                            <tr
-                              key={row.id}
-                              className={`${
-                                rowIndex < rows.length - 1 ? "border-b border-slate-100" : ""
-                              }`}
-                            >
-                              <td className="px-6 py-4 font-medium text-slate-900">
-                                {row.influencer_handle}
+                          {rows.map((row) => (
+                            <tr key={row.id} className="border-b border-slate-100 last:border-b-0">
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-3">
+                                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
+                                    {row.influencer_handle.replace(/^@/, "").charAt(0).toUpperCase()}
+                                  </span>
+                                  <span className="font-medium text-slate-900">
+                                    {row.influencer_handle}
+                                  </span>
+                                </div>
                               </td>
-                              <td className="px-6 py-4 text-slate-600">{row.content_type}</td>
-                              <td className="px-6 py-4 text-slate-900">
+                              <td className="px-4 py-3 text-slate-600">{row.content_type}</td>
+                              <td className="px-4 py-3 text-slate-900">
                                 {rowLeads(row).toLocaleString()}
                               </td>
-                              <td className="px-6 py-4 text-slate-600">
+                              <td className="px-4 py-3 text-slate-600">
                                 {currency(row.cost_per_lead)}
                               </td>
-                              <td className="px-6 py-4 font-medium text-slate-900">
+                              <td className="px-4 py-3 font-medium text-slate-900">
                                 {currency(rowLeads(row) * row.cost_per_lead)}
                               </td>
-                              <td className="px-6 py-4 text-slate-600">
+                              <td className="px-4 py-3 text-slate-600">
                                 {formatDate(row.date_onboarded)}
                               </td>
-                              <td className="px-6 py-4 text-slate-600">
+                              <td className="px-4 py-3 text-slate-600">
                                 {formatDate(row.date_paid)}
                               </td>
-                              <td className="px-6 py-4">
+                              <td className="px-4 py-3">
                                 <span
                                   className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${statusPill(row.status)}`}
                                 >
@@ -494,6 +537,7 @@ function AppPage() {
                   )}
                 </section>
               </div>
+
             )}
           </TabsContent>
 
