@@ -393,7 +393,7 @@ function AppPage() {
                   <div className="mt-6 flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
                     {tractionSteps.map((step, index) => {
                       const isLast = index === tractionSteps.length - 1;
-                      const isLeads = index === 3;
+                      const isLeads = index === 2;
                       const number = String(index + 1).padStart(2, "0");
                       return (
                         <div key={step.label} className="flex flex-1 items-center gap-4">
