@@ -37,13 +37,13 @@ function LandingPage() {
     queryKey: ["lp", slug],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
-          .from("campaign_influencers")
-          .select("id, influencer_handle")
-          .eq("slug", slug)
-          .maybeSingle();
+        const { data, error } = await (supabase.rpc as any)(
+          "get_public_influencer",
+          { _slug: slug },
+        );
         if (error) throw error;
-        return data;
+        const row = Array.isArray(data) ? data[0] : data;
+        return (row as { id: string; influencer_handle: string } | undefined) ?? null;
       } catch {
         toast.error("Couldn't load this page. Please try again.");
         return null;
