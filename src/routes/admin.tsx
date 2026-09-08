@@ -317,6 +317,25 @@ function AdminPage() {
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                aria-label={`Copy landing page link for ${row.influencer_handle}`}
+                                title="Copy link"
+                                className={iconBtn}
+                                onClick={async () => {
+                                  try {
+                                    await navigator.clipboard.writeText(
+                                      `${window.location.origin}/lp/${row.slug}`,
+                                    );
+                                    toast.success("Link copied");
+                                  } catch {
+                                    toast.error("Couldn't copy the link. Please try again.");
+                                  }
+                                }}
+                              >
+                                <LinkIcon className="h-4 w-4" />
+                              </button>
+
+                              <button
+                                type="button"
                                 aria-label={`Edit ${row.influencer_handle}`}
                                 className={iconBtn}
                                 onClick={() => setEditInfluencer(row)}
