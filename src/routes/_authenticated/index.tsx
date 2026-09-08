@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { publicLandingUrl } from "@/lib/public-url";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -16,6 +16,7 @@ import {
   Link as LinkIcon,
   ExternalLink,
   KeyRound,
+  LogOut,
   Pencil,
   Plus,
   Trash2,
@@ -45,6 +46,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
 import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
+import { checkIsAdmin } from "@/lib/admin-setup.functions";
 
 export const Route = createFileRoute("/_authenticated/")({
   head: () => ({
