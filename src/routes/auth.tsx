@@ -33,10 +33,21 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const redirectByUserType = async (userId: string) => {
+    const { data: influencer } = await supabase
+      .from("campaign_influencers")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return influencer ? "/portal" : "/";
+  };
+
   useEffect(() => {
     let active = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (active && data.session) navigate({ to: "/portal", replace: true });
+    supabase.auth.getSession().then(async ({ data }) => {
+      if (!active || !data.session) return;
+      const target = await redirectByUserType(data.session.user.id);
+      if (active) navigate({ to: target, replace: true });
     });
     return () => {
       active = false;
@@ -51,13 +62,15 @@ function AuthPage() {
     }
     setBusy(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
       if (error) throw error;
       await supabase.rpc("claim_influencer_access");
-      navigate({ to: "/portal", replace: true });
+      const userId = signInData.user?.id;
+      const target = userId ? await redirectByUserType(userId) : "/";
+      navigate({ to: target, replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
