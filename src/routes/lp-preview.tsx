@@ -77,7 +77,7 @@ function LandingPreviewPage() {
   }, [settings]);
 
   useEffect(() => {
-    if (!slug && influencers && influencers.length > 0) setSlug(influencers[0].slug);
+    if (!slug && influencers && influencers.length > 0) setSlug(influencers[0]!.slug);
   }, [influencers, slug]);
 
   const set = (key: keyof LandingSettings, value: string) =>
