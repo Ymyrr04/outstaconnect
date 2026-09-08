@@ -184,18 +184,35 @@ function AppPage() {
   });
   const leadsList = leadsData ?? [];
 
+  const { data: contentTotalsData } = useQuery({
+    queryKey: ["app-data", "content-totals"],
+    queryFn: async () => {
+      try {
+        return await getContentTotals();
+      } catch {
+        return {} as Record<string, ContentTotals>;
+      }
+    },
+  });
+
   const campaigns = data?.campaigns ?? [];
   const influencers = data?.influencers ?? [];
   const campaign = campaigns[0] ?? null;
   const rows = campaign ? influencers.filter((i) => i.campaign_id === campaign.id) : [];
   const leadCounts = leadCountsData ?? {};
+  const contentTotals = contentTotalsData ?? {};
   const rowLeads = (r: InfluencerRecord) => (r.leads ?? 0) + (leadCounts[r.id] ?? 0);
+  const rowViews = (r: InfluencerRecord) =>
+    (r.content_views ?? 0) + (contentTotals[r.id]?.views ?? 0);
+  const rowEngagements = (r: InfluencerRecord) =>
+    (r.engagements ?? 0) + (contentTotals[r.id]?.engagements ?? 0);
+  const rowShares = (r: InfluencerRecord) => contentTotals[r.id]?.shares ?? 0;
 
   const totalLeads = rows.reduce((sum, r) => sum + rowLeads(r), 0);
   const costPerLead = rows.find((r) => r.cost_per_lead != null)?.cost_per_lead ?? 0;
   const revenue = rows.reduce((sum, r) => sum + rowLeads(r) * (r.cost_per_lead ?? 0), 0);
-  const views = rows.reduce((sum, r) => sum + (r.content_views ?? 0), 0);
-  const engagements = rows.reduce((sum, r) => sum + (r.engagements ?? 0), 0);
+  const views = rows.reduce((sum, r) => sum + rowViews(r), 0);
+  const engagements = rows.reduce((sum, r) => sum + rowEngagements(r), 0);
   const clicks = rows.reduce((sum, r) => sum + (r.link_clicks ?? 0), 0);
 
   const statValues = [
