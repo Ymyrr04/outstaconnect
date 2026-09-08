@@ -191,12 +191,16 @@ function Dashboard() {
   const campaign = data?.campaign ?? null;
   const rows = data?.influencers ?? [];
 
-  const totalLeads = rows.reduce((sum, r) => sum + (r.leads ?? 0), 0);
+  const leadCounts = leadCountsData ?? {};
+  const rowLeads = (r: Influencer) => (r.leads ?? 0) + (leadCounts[r.id] ?? 0);
+
+  const totalLeads = rows.reduce((sum, r) => sum + rowLeads(r), 0);
   const costPerLead = rows.find((r) => r.cost_per_lead != null)?.cost_per_lead ?? 0;
-  const revenue = rows.reduce((sum, r) => sum + (r.leads ?? 0) * (r.cost_per_lead ?? 0), 0);
+  const revenue = rows.reduce((sum, r) => sum + rowLeads(r) * (r.cost_per_lead ?? 0), 0);
   const views = rows.reduce((sum, r) => sum + (r.content_views ?? 0), 0);
   const engagements = rows.reduce((sum, r) => sum + (r.engagements ?? 0), 0);
   const clicks = rows.reduce((sum, r) => sum + (r.link_clicks ?? 0), 0);
+
 
   const statValues = [
     totalLeads.toLocaleString(),
