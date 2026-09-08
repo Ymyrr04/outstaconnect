@@ -123,11 +123,9 @@ const stats = [
 ];
 
 const tractionSteps = [
-  { label: "Content Views", description: "Total content impressions" },
-  { label: "Engagements", description: "Likes, comments, shares" },
+  { label: "Influencers / Referrer", description: "Active creators" },
   { label: "Link Clicks", description: "Clicked to landing page" },
   { label: "Leads", description: "Qualified leads" },
-  { label: "Revenue", description: "Potential value" },
 ];
 
 
