@@ -17,20 +17,46 @@ import { supabase } from "@/integrations/supabase/client";
 
 type Errors = Partial<Record<"name" | "start_date" | "end_date", string>>;
 
-export function CreateCampaignDialog({ onCreated }: { onCreated: () => void }) {
-  const [open, setOpen] = useState(false);
+export type CampaignRecord = {
+  id: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+};
+
+export function CreateCampaignDialog({
+  onCreated,
+  campaign,
+  trigger,
+  open: controlledOpen,
+  onOpenChange,
+}: {
+  onCreated: () => void;
+  campaign?: CampaignRecord;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) => {
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
+  };
+  const isEdit = !!campaign;
   const [saving, setSaving] = useState(false);
-  const [name, setName] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [name, setName] = useState(campaign?.name ?? "");
+  const [startDate, setStartDate] = useState(campaign?.start_date ?? "");
+  const [endDate, setEndDate] = useState(campaign?.end_date ?? "");
   const [errors, setErrors] = useState<Errors>({});
 
   const reset = () => {
-    setName("");
-    setStartDate("");
-    setEndDate("");
+    setName(campaign?.name ?? "");
+    setStartDate(campaign?.start_date ?? "");
+    setEndDate(campaign?.end_date ?? "");
     setErrors({});
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,16 +70,21 @@ export function CreateCampaignDialog({ onCreated }: { onCreated: () => void }) {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("campaigns")
-        .insert({ name: name.trim(), start_date: startDate, end_date: endDate });
+      const payload = { name: name.trim(), start_date: startDate, end_date: endDate };
+      const { error } = isEdit
+        ? await supabase.from("campaigns").update(payload).eq("id", campaign!.id)
+        : await supabase.from("campaigns").insert(payload);
       if (error) throw error;
-      toast.success("Campaign created");
-      reset();
+      toast.success(isEdit ? "Campaign updated" : "Campaign created");
       setOpen(false);
+      if (!isEdit) reset();
       onCreated();
     } catch {
-      toast.error("Couldn't create the campaign. Please try again.");
+      toast.error(
+        isEdit
+          ? "Couldn't update the campaign. Please try again."
+          : "Couldn't create the campaign. Please try again.",
+      );
     } finally {
       setSaving(false);
     }
@@ -67,17 +98,28 @@ export function CreateCampaignDialog({ onCreated }: { onCreated: () => void }) {
         if (!next) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button className="gap-2">
-          <PlusCircle className="h-4 w-4" />
-          Create campaign
-        </Button>
-      </DialogTrigger>
+      {trigger !== undefined ? (
+        trigger ? (
+          <DialogTrigger asChild>{trigger}</DialogTrigger>
+        ) : null
+      ) : (
+        <DialogTrigger asChild>
+          <Button className="gap-2">
+            <PlusCircle className="h-4 w-4" />
+            Create campaign
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create campaign</DialogTitle>
-          <DialogDescription>Set up a new influencer marketing campaign.</DialogDescription>
+          <DialogTitle>{isEdit ? "Edit campaign" : "Create campaign"}</DialogTitle>
+          <DialogDescription>
+            {isEdit
+              ? "Update the details of this campaign."
+              : "Set up a new influencer marketing campaign."}
+          </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div className="space-y-1.5">
             <Label htmlFor="campaign-name">Campaign name</Label>
@@ -114,7 +156,7 @@ export function CreateCampaignDialog({ onCreated }: { onCreated: () => void }) {
           </div>
           <DialogFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Create campaign"}
+              {saving ? "Saving…" : isEdit ? "Save changes" : "Create campaign"}
             </Button>
           </DialogFooter>
         </form>
