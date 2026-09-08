@@ -9,10 +9,6 @@ import {
   PlusCircle,
   Users,
   DollarSign,
-  BarChart3,
-  CheckCircle,
-  Camera,
-  MousePointerClick,
   UserCheck,
   FolderPlus,
   Link as LinkIcon,
@@ -20,7 +16,6 @@ import {
   Plus,
   Trash2,
   TrendingUp,
-
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
