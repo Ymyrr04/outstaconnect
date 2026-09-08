@@ -17,6 +17,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { getLeadCounts } from "@/lib/leads.functions";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -187,16 +189,31 @@ function Dashboard() {
       }
     },
   });
+  const { data: leadCountsData } = useQuery({
+    queryKey: ["dashboard", "lead-counts"],
+    queryFn: async () => {
+      try {
+        return await getLeadCounts();
+      } catch {
+        return {} as Record<string, number>;
+      }
+    },
+  });
 
   const campaign = data?.campaign ?? null;
   const rows = data?.influencers ?? [];
 
-  const totalLeads = rows.reduce((sum, r) => sum + (r.leads ?? 0), 0);
+
+  const leadCounts = leadCountsData ?? {};
+  const rowLeads = (r: Influencer) => (r.leads ?? 0) + (leadCounts[r.id] ?? 0);
+
+  const totalLeads = rows.reduce((sum, r) => sum + rowLeads(r), 0);
   const costPerLead = rows.find((r) => r.cost_per_lead != null)?.cost_per_lead ?? 0;
-  const revenue = rows.reduce((sum, r) => sum + (r.leads ?? 0) * (r.cost_per_lead ?? 0), 0);
+  const revenue = rows.reduce((sum, r) => sum + rowLeads(r) * (r.cost_per_lead ?? 0), 0);
   const views = rows.reduce((sum, r) => sum + (r.content_views ?? 0), 0);
   const engagements = rows.reduce((sum, r) => sum + (r.engagements ?? 0), 0);
   const clicks = rows.reduce((sum, r) => sum + (r.link_clicks ?? 0), 0);
+
 
   const statValues = [
     totalLeads.toLocaleString(),
@@ -372,11 +389,14 @@ function Dashboard() {
                         {row.influencer_handle}
                       </td>
                       <td className="px-6 py-4 text-slate-600">{row.content_type}</td>
-                      <td className="px-6 py-4 text-slate-900">{row.leads.toLocaleString()}</td>
+                      <td className="px-6 py-4 text-slate-900">
+                        {rowLeads(row).toLocaleString()}
+                      </td>
                       <td className="px-6 py-4 text-slate-600">{currency(row.cost_per_lead)}</td>
                       <td className="px-6 py-4 font-medium text-slate-900">
-                        {currency(row.leads * row.cost_per_lead)}
+                        {currency(rowLeads(row) * row.cost_per_lead)}
                       </td>
+
                       <td className="px-6 py-4 text-slate-600">{formatDate(row.date_onboarded)}</td>
                       <td className="px-6 py-4 text-slate-600">{formatDate(row.date_paid)}</td>
                       <td className="px-6 py-4">

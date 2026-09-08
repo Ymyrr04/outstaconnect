@@ -28,6 +28,7 @@ export type Database = {
           influencer_handle: string
           leads: number
           link_clicks: number
+          slug: string
           status: string
         }
         Insert: {
@@ -43,6 +44,7 @@ export type Database = {
           influencer_handle: string
           leads?: number
           link_clicks?: number
+          slug: string
           status?: string
         }
         Update: {
@@ -58,6 +60,7 @@ export type Database = {
           influencer_handle?: string
           leads?: number
           link_clicks?: number
+          slug?: string
           status?: string
         }
         Relationships: [
@@ -94,12 +97,59 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          campaign_influencer_id: string
+          company_name: string
+          company_size: string
+          created_at: string
+          full_name: string
+          id: string
+          phone: string | null
+          roles_hiring_for: string
+          talent_preference: string
+          work_email: string
+        }
+        Insert: {
+          campaign_influencer_id: string
+          company_name: string
+          company_size: string
+          created_at?: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          roles_hiring_for: string
+          talent_preference: string
+          work_email: string
+        }
+        Update: {
+          campaign_influencer_id?: string
+          company_name?: string
+          company_size?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          roles_hiring_for?: string
+          talent_preference?: string
+          work_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_campaign_influencer_id_fkey"
+            columns: ["campaign_influencer_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_influencers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      slugify_handle: { Args: { _handle: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never

@@ -21,11 +21,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { slugify } from "@/lib/slug";
+
 
 type Errors = Partial<Record<"handle" | "content_type" | "leads" | "cost_per_lead", string>>;
 
 const emptyForm = {
   handle: "",
+  slug: "",
   contentType: "",
   leads: "0",
   costPerLead: "0",
@@ -37,6 +40,7 @@ const emptyForm = {
   linkClicks: "0",
 };
 
+
 const toInt = (v: string) => {
   const n = Number.parseInt(v, 10);
   return Number.isFinite(n) ? n : 0;
@@ -46,6 +50,7 @@ export type InfluencerRecord = {
   id: string;
   campaign_id: string;
   influencer_handle: string;
+  slug: string;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -61,9 +66,11 @@ const formFrom = (r?: InfluencerRecord) =>
   r
     ? {
         handle: r.influencer_handle,
+        slug: r.slug ?? "",
         contentType: r.content_type,
         leads: String(r.leads ?? 0),
         costPerLead: String(r.cost_per_lead ?? 0),
+
         dateOnboarded: r.date_onboarded ?? "",
         datePaid: r.date_paid ?? "",
         status: r.status || "Pending",
@@ -124,6 +131,8 @@ export function AddInfluencerDialog({
       const payload = {
         campaign_id: campaignId,
         influencer_handle: form.handle.trim(),
+        slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
+
         content_type: form.contentType.trim(),
         leads: toInt(form.leads),
         cost_per_lead: Number(form.costPerLead) || 0,
@@ -195,6 +204,17 @@ export function AddInfluencerDialog({
               />
               {errors.handle && <p className="text-xs text-destructive">{errors.handle}</p>}
             </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="slug">Landing page slug</Label>
+              <Input
+                id="slug"
+                value={form.slug}
+                maxLength={80}
+                placeholder="auto from handle"
+                onChange={(e) => set("slug", e.target.value)}
+              />
+            </div>
+
             <div className="space-y-1.5">
               <Label htmlFor="content-type">Content type</Label>
               <Input

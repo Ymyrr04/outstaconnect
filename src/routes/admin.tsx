@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { FolderPlus, Pencil, Plus, Trash2, Users } from "lucide-react";
+import { FolderPlus, Link as LinkIcon, Pencil, Plus, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -315,6 +315,25 @@ function AdminPage() {
                           </td>
                           <td className="py-4 pr-4">
                             <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                aria-label={`Copy landing page link for ${row.influencer_handle}`}
+                                title="Copy link"
+                                className={iconBtn}
+                                onClick={async () => {
+                                  try {
+                                    await navigator.clipboard.writeText(
+                                      `${window.location.origin}/lp/${row.slug}`,
+                                    );
+                                    toast.success("Link copied");
+                                  } catch {
+                                    toast.error("Couldn't copy the link. Please try again.");
+                                  }
+                                }}
+                              >
+                                <LinkIcon className="h-4 w-4" />
+                              </button>
+
                               <button
                                 type="button"
                                 aria-label={`Edit ${row.influencer_handle}`}
