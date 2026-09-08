@@ -104,9 +104,6 @@ function AuthPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-xs text-slate-500">
-          Accounts are created by the OutSta team. Contact us if you need access.
-        </p>
       </div>
     </main>
   );
