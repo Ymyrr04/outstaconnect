@@ -141,6 +141,36 @@ export type Database = {
           },
         ]
       }
+      landing_page_settings: {
+        Row: {
+          button_label: string
+          headline: string
+          id: string
+          singleton: boolean
+          subheadline: string
+          success_message: string
+          updated_at: string
+        }
+        Insert: {
+          button_label?: string
+          headline?: string
+          id?: string
+          singleton?: boolean
+          subheadline?: string
+          success_message?: string
+          updated_at?: string
+        }
+        Update: {
+          button_label?: string
+          headline?: string
+          id?: string
+          singleton?: boolean
+          subheadline?: string
+          success_message?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           campaign_influencer_id: string
