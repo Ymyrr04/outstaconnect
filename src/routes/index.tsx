@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { CreateCampaignDialog } from "@/components/CreateCampaignDialog";
+import { AddInfluencerDialog } from "@/components/AddInfluencerDialog";
 import { toast } from "sonner";
 import {
   TrendingUp,
@@ -177,6 +179,8 @@ function statusPill(status: string) {
 }
 
 function Dashboard() {
+  const queryClient = useQueryClient();
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["dashboard"] });
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
@@ -214,6 +218,9 @@ function Dashboard() {
         <h1 className="mt-4 text-xl font-semibold text-slate-900">
           No campaign found. Create one to get started.
         </h1>
+        <div className="mt-6">
+          <CreateCampaignDialog onCreated={refresh} />
+        </div>
       </main>
     );
   }
