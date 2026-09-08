@@ -156,7 +156,7 @@ export function CreateCampaignDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Create campaign"}
+              {saving ? "Saving…" : isEdit ? "Save changes" : "Create campaign"}
             </Button>
           </DialogFooter>
         </form>
