@@ -34,3 +34,46 @@ export const createInfluencerAccount = createServerFn({ method: "POST" })
     }
     return { created: true as const, password };
   });
+
+/**
+ * Generates a fresh password for an existing creator login (or creates the
+ * account when it doesn't exist yet) and returns it so the admin can share it.
+ */
+export const resetInfluencerPassword = createServerFn({ method: "POST" })
+  .inputValidator((data: { email: string }) => data)
+  .handler(async ({ data }) => {
+    const email = data.email.trim().toLowerCase();
+    if (!email) throw new Error("This creator has no login email yet.");
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const password = generatePassword();
+
+    let userId: string | null = null;
+    for (let page = 1; page <= 20 && !userId; page++) {
+      const { data: list, error } = await supabaseAdmin.auth.admin.listUsers({
+        page,
+        perPage: 200,
+      });
+      if (error) throw error;
+      const found = list.users.find((u) => (u.email ?? "").toLowerCase() === email);
+      if (found) userId = found.id;
+      if (list.users.length < 200) break;
+    }
+
+    if (!userId) {
+      const { error } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      });
+      if (error) throw error;
+      return { email, password };
+    }
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password,
+      email_confirm: true,
+    });
+    if (error) throw error;
+    return { email, password };
+  });

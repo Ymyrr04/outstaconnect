@@ -15,6 +15,7 @@ import {
   FolderPlus,
   Link as LinkIcon,
   ExternalLink,
+  KeyRound,
   Pencil,
   Plus,
   Trash2,
@@ -43,6 +44,7 @@ import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfl
 import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
+import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -232,6 +234,28 @@ function AppPage() {
   const [deleteCampaign, setDeleteCampaign] = useState<CampaignRecord | null>(null);
   const [editInfluencer, setEditInfluencer] = useState<InfluencerRecord | null>(null);
   const [deleteInfluencer, setDeleteInfluencer] = useState<InfluencerRecord | null>(null);
+  const [newCredentials, setNewCredentials] = useState<{
+    email: string;
+    password: string;
+  } | null>(null);
+  const [resettingId, setResettingId] = useState<string | null>(null);
+
+  const resetPassword = async (row: InfluencerRecord) => {
+    const email = (row as { email?: string | null }).email?.trim();
+    if (!email) {
+      toast.error("Add a login email for this creator first (edit their details).");
+      return;
+    }
+    setResettingId(row.id);
+    try {
+      const res = await resetInfluencerPassword({ data: { email } });
+      setNewCredentials(res);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't reset the password.");
+    } finally {
+      setResettingId(null);
+    }
+  };
   const [busy, setBusy] = useState(false);
 
   const campaignName = (id: string) => campaigns.find((c) => c.id === id)?.name ?? "—";
@@ -665,6 +689,16 @@ function AppPage() {
                               </button>
                               <button
                                 type="button"
+                                aria-label={`Reset password for ${row.influencer_handle}`}
+                                title="Reset sign-in password"
+                                className={iconBtn}
+                                disabled={resettingId === row.id}
+                                onClick={() => void resetPassword(row)}
+                              >
+                                <KeyRound className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
                                 aria-label={`Edit ${row.influencer_handle}`}
                                 className={iconBtn}
                                 onClick={() => setEditInfluencer(row)}
@@ -828,6 +862,51 @@ function AppPage() {
             >
               {busy ? "Deleting…" : "Delete"}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={!!newCredentials}
+        onOpenChange={(next) => {
+          if (!next) setNewCredentials(null);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>New sign-in password</AlertDialogTitle>
+            <AlertDialogDescription>
+              Share these details with the creator. The password is shown only once.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {newCredentials && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm">
+              <p className="text-slate-600">{newCredentials.email}</p>
+              <p className="mt-1 font-mono font-medium text-slate-900">
+                {newCredentials.password}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      `Email: ${newCredentials.email}\nPassword: ${newCredentials.password}`,
+                    );
+                    toast.success("Copied");
+                  } catch {
+                    toast.error("Couldn't copy. Please select the text instead.");
+                  }
+                }}
+              >
+                Copy details
+              </Button>
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Done</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
