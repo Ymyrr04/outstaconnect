@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { CreateCampaignDialog } from "@/components/CreateCampaignDialog";
+import { AddInfluencerDialog } from "@/components/AddInfluencerDialog";
 import { toast } from "sonner";
 import {
   TrendingUp,
@@ -177,6 +179,8 @@ function statusPill(status: string) {
 }
 
 function Dashboard() {
+  const queryClient = useQueryClient();
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["dashboard"] });
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard"],
     queryFn: async () => {
@@ -214,6 +218,9 @@ function Dashboard() {
         <h1 className="mt-4 text-xl font-semibold text-slate-900">
           No campaign found. Create one to get started.
         </h1>
+        <div className="mt-6">
+          <CreateCampaignDialog onCreated={refresh} />
+        </div>
       </main>
     );
   }
@@ -335,7 +342,10 @@ function Dashboard() {
         </section>
 
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-slate-900">Campaign details</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-slate-900">Campaign details</h2>
+            <AddInfluencerDialog campaignId={campaign.id} onCreated={refresh} />
+          </div>
           {rows.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Users className="h-10 w-10 text-slate-300" />
