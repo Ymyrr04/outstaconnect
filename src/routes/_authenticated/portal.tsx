@@ -47,6 +47,16 @@ export const Route = createFileRoute("/_authenticated/portal")({
   component: PortalPage,
 });
 
+type ContentPost = {
+  id: string;
+  campaign_influencer_id: string;
+  post_url: string;
+  views: number;
+  engagements: number;
+  shares: number;
+  created_at: string;
+};
+
 type Row = {
   id: string;
   influencer_handle: string;
