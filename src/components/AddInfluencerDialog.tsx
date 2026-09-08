@@ -297,7 +297,7 @@ export function AddInfluencerDialog({
           </div>
           <DialogFooter>
             <Button type="submit" disabled={saving}>
-              {saving ? "Saving…" : "Add influencer"}
+              {saving ? "Saving…" : isEdit ? "Save changes" : "Add influencer"}
             </Button>
           </DialogFooter>
         </form>
