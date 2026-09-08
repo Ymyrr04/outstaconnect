@@ -114,8 +114,8 @@ const stats = [
   { label: "Total Leads" },
   { label: "Cost Per Lead", sub: "(per lead)" },
   { label: "Potential Revenue Value" },
-  { label: "Date Onboarded", sub: "(per lead)" },
-  { label: "Date Paid", sub: "(per lead)" },
+  { label: "Date Onboarded", sub: "Latest" },
+  { label: "Date Paid", sub: "Latest" },
 ];
 
 const tractionSteps = [
