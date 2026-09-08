@@ -126,6 +126,8 @@ export function AddInfluencerDialog({
       const payload = {
         campaign_id: campaignId,
         influencer_handle: form.handle.trim(),
+        slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
+
         content_type: form.contentType.trim(),
         leads: toInt(form.leads),
         cost_per_lead: Number(form.costPerLead) || 0,
