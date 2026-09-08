@@ -29,6 +29,7 @@ type Errors = Partial<Record<"handle" | "content_type" | "leads" | "cost_per_lea
 const emptyForm = {
   handle: "",
   slug: "",
+  email: "",
   contentType: "",
   leads: "0",
   costPerLead: "0",
@@ -51,6 +52,7 @@ export type InfluencerRecord = {
   campaign_id: string;
   influencer_handle: string;
   slug: string;
+  email?: string | null;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -67,6 +69,7 @@ const formFrom = (r?: InfluencerRecord) =>
     ? {
         handle: r.influencer_handle,
         slug: r.slug ?? "",
+        email: r.email ?? "",
         contentType: r.content_type,
         leads: String(r.leads ?? 0),
         costPerLead: String(r.cost_per_lead ?? 0),
@@ -132,7 +135,7 @@ export function AddInfluencerDialog({
         campaign_id: campaignId,
         influencer_handle: form.handle.trim(),
         slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
-
+        email: form.email.trim().toLowerCase() || null,
         content_type: form.contentType.trim(),
         leads: toInt(form.leads),
         cost_per_lead: Number(form.costPerLead) || 0,
@@ -214,6 +217,22 @@ export function AddInfluencerDialog({
                 onChange={(e) => set("slug", e.target.value)}
               />
             </div>
+            <div className="space-y-1.5 sm:col-span-2">
+              <Label htmlFor="influencer-email">Creator login email</Label>
+              <Input
+                id="influencer-email"
+                type="email"
+                value={form.email}
+                maxLength={120}
+                placeholder="creator@email.com"
+                onChange={(e) => set("email", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                They sign in with this email to see their own results.
+              </p>
+            </div>
+
+
 
             <div className="space-y-1.5">
               <Label htmlFor="content-type">Content type</Label>

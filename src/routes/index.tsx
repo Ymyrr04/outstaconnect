@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -287,15 +287,23 @@ function AppPage() {
               Track how your influencer content drives real leads and revenue.
             </p>
           </div>
-          {campaign && (
-            <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 md:self-auto">
-              <Calendar className="h-4 w-4 text-slate-400" />
-              <span>
-                {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
-              </span>
-              <ChevronDown className="h-4 w-4 text-slate-400" />
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            <Link
+              to="/portal"
+              className="text-sm text-slate-500 underline underline-offset-4 hover:text-slate-900"
+            >
+              Creator portal
+            </Link>
+            {campaign && (
+              <div className="flex items-center gap-2 self-start rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-700 md:self-auto">
+                <Calendar className="h-4 w-4 text-slate-400" />
+                <span>
+                  {formatDate(campaign.start_date)} – {formatDate(campaign.end_date)}
+                </span>
+                <ChevronDown className="h-4 w-4 text-slate-400" />
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
