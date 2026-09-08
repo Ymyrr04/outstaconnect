@@ -342,7 +342,10 @@ function Dashboard() {
         </section>
 
         <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-slate-900">Campaign details</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-semibold text-slate-900">Campaign details</h2>
+            <AddInfluencerDialog campaignId={campaign.id} onCreated={refresh} />
+          </div>
           {rows.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <Users className="h-10 w-10 text-slate-300" />
