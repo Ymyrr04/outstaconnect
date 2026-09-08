@@ -14,7 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      campaign_influencers: {
+        Row: {
+          campaign_id: string
+          content_type: string
+          content_views: number
+          cost_per_lead: number
+          created_at: string
+          date_onboarded: string | null
+          date_paid: string | null
+          engagements: number
+          id: string
+          influencer_handle: string
+          leads: number
+          link_clicks: number
+          status: string
+        }
+        Insert: {
+          campaign_id: string
+          content_type: string
+          content_views?: number
+          cost_per_lead?: number
+          created_at?: string
+          date_onboarded?: string | null
+          date_paid?: string | null
+          engagements?: number
+          id?: string
+          influencer_handle: string
+          leads?: number
+          link_clicks?: number
+          status?: string
+        }
+        Update: {
+          campaign_id?: string
+          content_type?: string
+          content_views?: number
+          cost_per_lead?: number
+          created_at?: string
+          date_onboarded?: string | null
+          date_paid?: string | null
+          engagements?: number
+          id?: string
+          influencer_handle?: string
+          leads?: number
+          link_clicks?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_influencers_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          created_at: string
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
