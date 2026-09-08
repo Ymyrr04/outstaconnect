@@ -273,14 +273,18 @@ function PortalPage() {
       <header className="bg-[#0ABEDF]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
           <div>
-            <img
-              src={outstaLogoAsset.url}
-              alt="OutSta"
-              className="h-8 w-auto"
-            />
+            <div className="flex items-center gap-3">
+              <img
+                src={outstaLogoAsset.url}
+                alt=""
+                className="h-8 w-auto"
+              />
+              <span className="text-lg font-semibold tracking-tight text-white">OutSta</span>
+            </div>
             <h1 className="mt-3 text-lg font-semibold tracking-tight text-white">My results</h1>
             <p className="text-sm text-white/80">{email || "Your creator account"}</p>
           </div>
+
 
           <Button
             variant="outline"
