@@ -205,7 +205,7 @@ function PortalPage() {
 
   const leads = leadsQuery.data ?? [];
   const groupedLeads = useMemo(() => {
-    const map: Record<string, PipelineLead[]> = {
+    const map: Record<PipelineStage, PipelineLead[]> = {
       New: [],
       Contacted: [],
       Qualified: [],
@@ -214,8 +214,8 @@ function PortalPage() {
       Lost: [],
     };
     for (const lead of leads) {
-      const stage = lead.stage ?? "New";
-      (map[stage] ?? map.New).push(lead);
+      const stage = (lead.stage ?? "New") as PipelineStage;
+      map[stage].push(lead);
     }
     return map;
   }, [leads]);
