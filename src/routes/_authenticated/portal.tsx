@@ -62,6 +62,8 @@ type ContentPost = {
 type Row = {
   id: string;
   influencer_handle: string;
+  username: string | null;
+  primary_email: string | null;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -72,6 +74,7 @@ type Row = {
   link_clicks: number;
   campaigns: { name: string } | null;
 };
+
 
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -100,7 +103,8 @@ function PortalPage() {
       const { data, error } = await supabase
         .from("campaign_influencers")
         .select(
-          "id, influencer_handle, content_type, leads, cost_per_lead, status, date_paid, content_views, engagements, link_clicks, campaigns(name)",
+          "id, influencer_handle, username, primary_email, content_type, leads, cost_per_lead, status, date_paid, content_views, engagements, link_clicks, campaigns(name)",
+
         )
         .eq("user_id", user?.id ?? "")
         .order("date_onboarded", { ascending: true });
@@ -287,6 +291,16 @@ function PortalPage() {
 
   const submitPassword = async () => {
     setPwError("");
+    const username = profileUsername.trim();
+    const primaryEmail = profilePrimaryEmail.trim();
+    if (username && !/^[a-zA-Z0-9._-]{3,30}$/.test(username)) {
+      setPwError("Usernames are 3-30 letters, numbers, dots, dashes or underscores.");
+      return;
+    }
+    if (!primaryEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(primaryEmail)) {
+      setPwError("Enter your primary email address.");
+      return;
+    }
     if (pwNew.length < 8) {
       setPwError("Use at least 8 characters.");
       return;
@@ -297,6 +311,7 @@ function PortalPage() {
     }
     setPwSaving(true);
     try {
+
       // Try without the temporary password first; some setups don't require it.
       let { error } = await supabase.auth.updateUser({
         password: pwNew,
@@ -310,11 +325,30 @@ function PortalPage() {
         } as never));
       }
       if (error) throw error;
-      toast.success("Password updated");
+      if (profileRow) {
+        if (username) {
+          const { data: available } = await supabase.rpc("username_available", {
+            _username: username,
+            _self: profileRow.id,
+          });
+          if (available === false) {
+            setPwError("That username is already taken. Pick another one.");
+            return;
+          }
+        }
+        const { error: rowError } = await supabase
+          .from("campaign_influencers")
+          .update({ username: username || null, primary_email: primaryEmail })
+          .eq("id", profileRow.id);
+        if (rowError) throw rowError;
+        queryClient.invalidateQueries({ queryKey: ["portal", "rows"] });
+      }
+      toast.success("Account set up");
       setPwOpen(false);
       setPwCurrent("");
       setPwNew("");
       setPwConfirm("");
+
     } catch (e) {
       setPwError(e instanceof Error ? e.message : "Could not update the password.");
     } finally {
@@ -323,26 +357,57 @@ function PortalPage() {
   };
 
 
-  // Profile: display name / handle + password change
+  // Profile: display name / handle, username, primary email + password change
   const profileRow = rows[0] ?? null;
   const [profileHandle, setProfileHandle] = useState("");
+  const [profileUsername, setProfileUsername] = useState("");
+  const [profilePrimaryEmail, setProfilePrimaryEmail] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
   useEffect(() => {
-    if (profileRow) setProfileHandle(profileRow.influencer_handle ?? "");
-  }, [profileRow?.id, profileRow?.influencer_handle]);
+    if (profileRow) {
+      setProfileHandle(profileRow.influencer_handle ?? "");
+      setProfileUsername(profileRow.username ?? "");
+      setProfilePrimaryEmail(profileRow.primary_email ?? "");
+    }
+  }, [profileRow?.id, profileRow?.influencer_handle, profileRow?.username, profileRow?.primary_email]);
 
   const saveProfile = async () => {
     const handle = profileHandle.trim();
+    const username = profileUsername.trim();
+    const primaryEmail = profilePrimaryEmail.trim();
     if (!handle) {
       toast.error("Enter your name or handle.");
+      return;
+    }
+    if (username && !/^[a-zA-Z0-9._-]{3,30}$/.test(username)) {
+      toast.error("Usernames are 3-30 letters, numbers, dots, dashes or underscores.");
+      return;
+    }
+    if (primaryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(primaryEmail)) {
+      toast.error("Enter a valid primary email address.");
       return;
     }
     if (!profileRow) return;
     setProfileSaving(true);
     try {
+      if (username) {
+        const { data: available, error: checkError } = await supabase.rpc("username_available", {
+          _username: username,
+          _self: profileRow.id,
+        });
+        if (checkError) throw checkError;
+        if (available === false) {
+          toast.error("That username is already taken.");
+          return;
+        }
+      }
       const { error } = await supabase
         .from("campaign_influencers")
-        .update({ influencer_handle: handle })
+        .update({
+          influencer_handle: handle,
+          username: username || null,
+          primary_email: primaryEmail || null,
+        })
         .eq("id", profileRow.id);
       if (error) throw error;
       toast.success("Profile updated");
@@ -353,6 +418,7 @@ function PortalPage() {
       setProfileSaving(false);
     }
   };
+
 
   const [chgCurrent, setChgCurrent] = useState("");
   const [chgNew, setChgNew] = useState("");
@@ -714,12 +780,37 @@ function PortalPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
+                      <Label htmlFor="profile-username">Username (for sign in)</Label>
+                      <Input
+                        id="profile-username"
+                        value={profileUsername}
+                        placeholder="yourname"
+                        onChange={(e) => setProfileUsername(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-500">
+                        You can sign in with either this username or your login email.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="profile-primary-email">Primary email</Label>
+                      <Input
+                        id="profile-primary-email"
+                        type="email"
+                        value={profilePrimaryEmail}
+                        onChange={(e) => setProfilePrimaryEmail(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-500">
+                        Where we contact you about this campaign.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
                       <Label htmlFor="profile-email">Login email</Label>
                       <Input id="profile-email" value={email} readOnly disabled />
                       <p className="text-xs text-slate-500">
                         Contact your OutSta manager to change your login email.
                       </p>
                     </div>
+
                     <Button
                       className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
                       onClick={() => {
@@ -787,8 +878,28 @@ function PortalPage() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
-              Replace the temporary password you were given with one only you know.
+              Set up your account: pick a username, confirm your primary email and replace the
+              temporary password with one only you know.
             </p>
+            <div className="space-y-2">
+              <Label htmlFor="pw-username">Username (for sign in)</Label>
+              <Input
+                id="pw-username"
+                value={profileUsername}
+                placeholder="yourname"
+                onChange={(e) => setProfileUsername(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-primary-email">Primary email</Label>
+              <Input
+                id="pw-primary-email"
+                type="email"
+                value={profilePrimaryEmail}
+                onChange={(e) => setProfilePrimaryEmail(e.target.value)}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="pw-current">Temporary password (if you have it)</Label>
               <Input

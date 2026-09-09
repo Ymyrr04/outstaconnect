@@ -29,7 +29,9 @@ type Errors = Partial<Record<keyof typeof emptyForm, string>>;
 const emptyForm = {
   handle: "",
   slug: "",
+  username: "",
   email: "",
+  primaryEmail: "",
   dateOnboarded: "",
   contentType: "",
   leads: "0",
@@ -46,7 +48,9 @@ export type InfluencerRecord = {
   campaign_id: string;
   influencer_handle: string;
   slug: string;
+  username?: string | null;
   email?: string | null;
+  primary_email?: string | null;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -63,7 +67,9 @@ const formFrom = (r?: InfluencerRecord) =>
     ? {
         handle: r.influencer_handle,
         slug: r.slug ?? "",
+        username: r.username ?? "",
         email: r.email ?? "",
+        primaryEmail: r.primary_email ?? "",
         dateOnboarded: r.date_onboarded ?? "",
         contentType: r.content_type ?? "",
         leads: String(r.leads ?? 0),
@@ -75,6 +81,7 @@ const formFrom = (r?: InfluencerRecord) =>
         linkClicks: String(r.link_clicks ?? 0),
       }
     : { ...emptyForm };
+
 
 export function AddInfluencerDialog({
   campaignId,
@@ -120,6 +127,11 @@ export function AddInfluencerDialog({
     if (!form.status.trim()) next.status = "Status is required";
     if (form.email.trim() && !/^\S+@\S+\.\S+$/.test(form.email.trim()))
       next.email = "Enter a valid email";
+    if (form.primaryEmail.trim() && !/^\S+@\S+\.\S+$/.test(form.primaryEmail.trim()))
+      next.primaryEmail = "Enter a valid email";
+    if (form.username.trim() && !/^[a-zA-Z0-9._-]{3,30}$/.test(form.username.trim()))
+      next.username = "3-30 letters, numbers, dots, dashes or underscores";
+
 
     const numFields = [
       { key: "leads" as const, label: "Leads" },
@@ -147,8 +159,11 @@ export function AddInfluencerDialog({
         influencer_handle: form.handle.trim(),
         slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
         email,
+        username: form.username.trim() || null,
+        primary_email: form.primaryEmail.trim().toLowerCase() || null,
         date_onboarded: form.dateOnboarded || null,
         content_type: form.contentType.trim(),
+
         leads: Math.max(0, Number(form.leads) || 0),
         cost_per_lead: Math.max(0, Number(form.costPerLead) || 0),
         status: form.status,
@@ -284,6 +299,21 @@ export function AddInfluencerDialog({
             </div>
 
             <div className="space-y-1.5">
+              <Label htmlFor="influencer-username">Username (optional login)</Label>
+              <Input
+                id="influencer-username"
+                value={form.username}
+                maxLength={30}
+                placeholder="creatorname"
+                onChange={(e) => set("username", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                They can sign in with this username or their login email.
+              </p>
+              {errors.username && <p className="text-xs text-destructive">{errors.username}</p>}
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="influencer-email">Email login</Label>
               <Input
                 id="influencer-email"
@@ -298,6 +328,25 @@ export function AddInfluencerDialog({
               </p>
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="influencer-primary-email">Primary email</Label>
+              <Input
+                id="influencer-primary-email"
+                type="email"
+                value={form.primaryEmail}
+                maxLength={120}
+                placeholder="contact@email.com"
+                onChange={(e) => set("primaryEmail", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Main contact address. The creator confirms this at first sign in.
+              </p>
+              {errors.primaryEmail && (
+                <p className="text-xs text-destructive">{errors.primaryEmail}</p>
+              )}
+            </div>
+
 
             <div className="space-y-1.5">
               <Label htmlFor="onboarded">Date onboarded</Label>

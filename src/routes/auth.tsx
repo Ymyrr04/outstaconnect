@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveLoginEmail } from "@/lib/login.functions";
 import outstaLogoAsset from "@/assets/outsta-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,9 +32,11 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const resolveEmail = useServerFn(resolveLoginEmail);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+
 
   const redirectByUserType = async (userId: string) => {
     const { data: influencer } = await supabase
@@ -57,13 +62,15 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password) {
-      toast.error("Enter your email and password.");
+      toast.error("Enter your username or email and your password.");
       return;
     }
     setBusy(true);
     try {
+      const { email: loginEmail } = await resolveEmail({ data: { identifier: email.trim() } });
+      if (!loginEmail) throw new Error("We couldn't find an account with that username.");
       const { data: signInData, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: loginEmail,
         password,
       });
       if (error) throw error;
@@ -77,6 +84,7 @@ function AuthPage() {
       setBusy(false);
     }
   };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-white px-6 py-16">
@@ -93,15 +101,16 @@ function AuthPage() {
 
         <form onSubmit={submit} className="mt-8 space-y-4">
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email">Username or email</Label>
             <Input
               id="email"
-              type="email"
-              autoComplete="email"
+              type="text"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
+
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
             <Input
@@ -120,16 +129,21 @@ function AuthPage() {
             onClick={async () => {
               const trimmed = email.trim();
               if (!trimmed) {
-                toast.error("Enter your email first, then tap Forgot password.");
+                toast.error("Enter your username or email first, then tap Forgot password.");
                 return;
               }
               setBusy(true);
               try {
-                const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
+                const { email: loginEmail } = await resolveEmail({
+                  data: { identifier: trimmed },
+                });
+                if (!loginEmail) throw new Error("We couldn't find an account with that username.");
+                const { error } = await supabase.auth.resetPasswordForEmail(loginEmail, {
                   redirectTo: `${window.location.origin}/reset-password`,
                 });
                 if (error) throw error;
                 toast.success("Reset link sent. Check your email inbox.");
+
               } catch (err) {
                 toast.error(
                   err instanceof Error ? err.message : "Something went wrong. Please try again.",
