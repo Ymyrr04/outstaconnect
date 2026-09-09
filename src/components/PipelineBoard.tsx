@@ -29,8 +29,8 @@ export type PipelineLead = {
   full_name: string;
   company_name: string;
   roles_hiring_for: string;
-  stage?: string | null;
-  hire_start_date?: string | null;
+  stage: string | null;
+  hire_start_date: string | null;
 };
 
 type Props = {
@@ -89,8 +89,9 @@ export function PipelineBoard({ leads, handles, loading, onChanged }: Props) {
     from: PipelineStage,
     hire?: string,
   ) => {
-    const payload: Record<string, unknown> = { stage };
-    if (hire) payload.hire_start_date = hire;
+    const payload: { stage: string; hire_start_date?: string } = hire
+      ? { stage, hire_start_date: hire }
+      : { stage };
     const { error } = await supabase.from("leads").update(payload).eq("id", leadId);
     if (error) {
       applyStage(leadId, from);
