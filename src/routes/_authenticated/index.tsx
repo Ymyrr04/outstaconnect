@@ -860,6 +860,104 @@ function AppPage() {
               )}
             </section>
           </TabsContent>
+
+          <TabsContent value="applications">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">Applications</h2>
+                <button
+                  type="button"
+                  onClick={copyApplyLink}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-[#0ABEDF] hover:text-[#0899B5]"
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  Copy sign-up link
+                </button>
+              </div>
+
+              {applicationsLoading ? (
+                <p className="py-10 text-center text-sm text-slate-500">Loading…</p>
+              ) : applications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <UserCheck className="h-10 w-10 text-slate-300" />
+                  <p className="mt-3 text-sm font-medium text-slate-600">No applications yet</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Share your sign-up link and new influencers or referrers will show up here.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[900px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                        <th className={thClass}>Name</th>
+                        <th className={thClass}>Handle</th>
+                        <th className={thClass}>Type</th>
+                        <th className={thClass}>Email</th>
+                        <th className={thClass}>Date</th>
+                        <th className={thClass}>Status</th>
+                        <th className={thClass}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {applications.map((app) => (
+                        <tr key={app.id} className="border-b border-slate-100 last:border-0">
+                          <td className="py-4 pr-4 font-medium text-slate-900">{app.full_name}</td>
+                          <td className="py-4 pr-4 text-slate-600">{app.handle}</td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${typePill(app.account_type)}`}
+                            >
+                              {typeLabel(app.account_type)}
+                            </span>
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">{app.email}</td>
+                          <td className="py-4 pr-4 text-slate-600">{formatDate(app.created_at)}</td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                                app.status === "Approved"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : app.status === "Declined"
+                                    ? "bg-rose-100 text-rose-700"
+                                    : "bg-slate-100 text-slate-600"
+                              }`}
+                            >
+                              {app.status}
+                            </span>
+                          </td>
+                          <td className="py-4 pr-4">
+                            {app.status === "Pending" ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  disabled={approvingId === app.id}
+                                  onClick={() => approveApplication(app)}
+                                  className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                                >
+                                  {approvingId === app.id ? "Approving…" : "Approve"}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => declineApplication(app)}
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
         </Tabs>
       </div>
 
