@@ -97,6 +97,26 @@ function statusPill(status: string) {
   return "bg-slate-100 text-slate-600";
 }
 
+type ApplicationRecord = {
+  id: string;
+  full_name: string;
+  handle: string;
+  email: string;
+  phone: string | null;
+  account_type: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+};
+
+const typePill = (type?: string | null) =>
+  (type ?? "influencer") === "referrer"
+    ? "bg-amber-100 text-amber-700"
+    : "bg-[#B2EEF8] text-[#066F85]";
+
+const typeLabel = (type?: string | null) =>
+  (type ?? "influencer") === "referrer" ? "Referrer" : "Influencer";
+
 async function fetchAppData() {
   const { data: campaigns, error: campaignError } = await supabase
     .from("campaigns")
@@ -199,6 +219,21 @@ function AppPage() {
     },
   });
   const leadsList = leadsData ?? [];
+
+  const { data: applicationsData, isLoading: applicationsLoading } = useQuery({
+    queryKey: ["app-data", "applications"],
+    enabled: isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ApplicationRecord[];
+    },
+  });
+  const applications = applicationsData ?? [];
+  const pendingApplications = applications.filter((a) => a.status === "Pending").length;
 
   const { data: contentTotalsData } = useQuery({
     queryKey: ["app-data", "content-totals"],
@@ -407,6 +442,9 @@ function AppPage() {
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="influencers">Influencers</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="applications">
+              Applications{pendingApplications > 0 ? ` (${pendingApplications})` : ""}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -657,6 +695,7 @@ function AppPage() {
                     <thead>
                       <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
                         <th className={thClass}>Influencer Handle</th>
+                        <th className={thClass}>Type</th>
                         <th className={thClass}>Campaign Name</th>
                         <th className={thClass}>Content Type</th>
                         <th className={thClass}>Leads</th>
@@ -671,6 +710,13 @@ function AppPage() {
                         <tr key={row.id} className="border-b border-slate-100 last:border-0">
                           <td className="py-4 pr-4 font-medium text-slate-900">
                             {row.influencer_handle}
+                          </td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${typePill(row.account_type)}`}
+                            >
+                              {typeLabel(row.account_type)}
+                            </span>
                           </td>
                           <td className="py-4 pr-4 text-slate-600">
                             {campaignName(row.campaign_id)}
