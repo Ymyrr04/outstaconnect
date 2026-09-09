@@ -472,7 +472,7 @@ function AppPage() {
   return (
     <main className="min-h-screen bg-[#F0FFFE] pb-20">
       <header className="bg-[#07283F] px-6 py-5 md:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="mx-auto flex max-w-[1680px] flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-5">
             <div className="flex items-center gap-2.5">
               <div
@@ -519,7 +519,7 @@ function AppPage() {
 
 
 
-      <div className="mx-auto max-w-7xl px-6 md:px-10">
+      <div className="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="pt-6">
           <TabsList className="bg-slate-50">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
