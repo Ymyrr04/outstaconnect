@@ -395,6 +395,22 @@ export function AddInfluencerDialog({
               </div>
             </div>
 
+            <div className="space-y-1.5">
+              <Label htmlFor="account-type">Type</Label>
+              <Select
+                value={form.accountType}
+                onValueChange={(value) => set("accountType", value)}
+              >
+                <SelectTrigger id="account-type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="influencer">Influencer (creator)</SelectItem>
+                  <SelectItem value="referrer">Referrer</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="status">Status</Label>
