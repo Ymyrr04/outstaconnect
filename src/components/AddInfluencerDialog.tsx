@@ -127,6 +127,11 @@ export function AddInfluencerDialog({
     if (!form.status.trim()) next.status = "Status is required";
     if (form.email.trim() && !/^\S+@\S+\.\S+$/.test(form.email.trim()))
       next.email = "Enter a valid email";
+    if (form.primaryEmail.trim() && !/^\S+@\S+\.\S+$/.test(form.primaryEmail.trim()))
+      next.primaryEmail = "Enter a valid email";
+    if (form.username.trim() && !/^[a-zA-Z0-9._-]{3,30}$/.test(form.username.trim()))
+      next.username = "3-30 letters, numbers, dots, dashes or underscores";
+
 
     const numFields = [
       { key: "leads" as const, label: "Leads" },
