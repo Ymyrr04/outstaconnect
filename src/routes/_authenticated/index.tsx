@@ -45,7 +45,11 @@ import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfl
 import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
-import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
+import {
+  createInfluencerAccount,
+  resetInfluencerPassword,
+} from "@/lib/influencer-account.functions";
+import { slugify } from "@/lib/slug";
 import { checkIsAdmin } from "@/lib/admin-setup.functions";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -291,6 +295,85 @@ function AppPage() {
     password: string;
   } | null>(null);
   const [resettingId, setResettingId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+
+  const applyUrl = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const isPrivate =
+      !origin ||
+      origin.includes("lovableproject.com") ||
+      origin.includes("-preview--") ||
+      origin.includes("localhost");
+    return `${isPrivate ? "https://outstaconnect.lovable.app" : origin}/apply`;
+  };
+
+  const copyApplyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(applyUrl());
+      toast.success("Sign-up link copied");
+    } catch {
+      toast.error("Couldn't copy the link.");
+    }
+  };
+
+  const approveApplication = async (app: ApplicationRecord) => {
+    const targetCampaign =
+      campaigns.find((c) => c.id === campaignFilter) ?? campaigns[0] ?? null;
+    if (!targetCampaign) {
+      toast.error("Create a campaign first, then approve this application.");
+      return;
+    }
+    setApprovingId(app.id);
+    try {
+      const email = app.email.trim().toLowerCase();
+      const { error } = await supabase.from("campaign_influencers").insert({
+        campaign_id: targetCampaign.id,
+        influencer_handle: app.handle || app.full_name,
+        slug: slugify(app.handle || app.full_name) || "creator",
+        email,
+        primary_email: email,
+        account_type: app.account_type,
+        content_type: "Not set",
+        status: "Pending",
+        date_onboarded: new Date().toISOString().slice(0, 10),
+      } as never);
+      if (error) throw error;
+
+      try {
+        const res = await createInfluencerAccount({ data: { email } });
+        if (res.created && res.password) setNewCredentials({ email, password: res.password });
+      } catch {
+        toast.error("Added, but their login account couldn't be created.");
+      }
+
+      const { error: updateError } = await supabase
+        .from("applications")
+        .update({ status: "Approved" } as never)
+        .eq("id", app.id);
+      if (updateError) throw updateError;
+
+      toast.success(`${app.full_name} approved`);
+      refresh();
+    } catch {
+      toast.error("Couldn't approve this application. Please try again.");
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  const declineApplication = async (app: ApplicationRecord) => {
+    try {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status: "Declined" } as never)
+        .eq("id", app.id);
+      if (error) throw error;
+      toast.success("Application declined");
+      refresh();
+    } catch {
+      toast.error("Couldn't update this application.");
+    }
+  };
 
   const resetPassword = async (row: InfluencerRecord) => {
     const email = (row as { email?: string | null }).email?.trim();
