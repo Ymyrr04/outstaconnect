@@ -129,16 +129,21 @@ function AuthPage() {
             onClick={async () => {
               const trimmed = email.trim();
               if (!trimmed) {
-                toast.error("Enter your email first, then tap Forgot password.");
+                toast.error("Enter your username or email first, then tap Forgot password.");
                 return;
               }
               setBusy(true);
               try {
-                const { error } = await supabase.auth.resetPasswordForEmail(trimmed, {
+                const { email: loginEmail } = await resolveEmail({
+                  data: { identifier: trimmed },
+                });
+                if (!loginEmail) throw new Error("We couldn't find an account with that username.");
+                const { error } = await supabase.auth.resetPasswordForEmail(loginEmail, {
                   redirectTo: `${window.location.origin}/reset-password`,
                 });
                 if (error) throw error;
                 toast.success("Reset link sent. Check your email inbox.");
+
               } catch (err) {
                 toast.error(
                   err instanceof Error ? err.message : "Something went wrong. Please try again.",
