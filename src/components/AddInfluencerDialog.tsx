@@ -33,6 +33,7 @@ const emptyForm = {
   email: "",
   primaryEmail: "",
   dateOnboarded: "",
+  accountType: "influencer",
   contentType: "",
   leads: "0",
   costPerLead: "0",
@@ -60,6 +61,7 @@ export type InfluencerRecord = {
   content_views: number;
   engagements: number;
   link_clicks: number;
+  account_type?: string | null;
 };
 
 const formFrom = (r?: InfluencerRecord) =>
@@ -71,6 +73,7 @@ const formFrom = (r?: InfluencerRecord) =>
         email: r.email ?? "",
         primaryEmail: r.primary_email ?? "",
         dateOnboarded: r.date_onboarded ?? "",
+        accountType: r.account_type ?? "influencer",
         contentType: r.content_type ?? "",
         leads: String(r.leads ?? 0),
         costPerLead: String(r.cost_per_lead ?? 0),
@@ -162,6 +165,7 @@ export function AddInfluencerDialog({
         username: form.username.trim() || null,
         primary_email: form.primaryEmail.trim().toLowerCase() || null,
         date_onboarded: form.dateOnboarded || null,
+        account_type: form.accountType,
         content_type: form.contentType.trim(),
 
         leads: Math.max(0, Number(form.leads) || 0),
@@ -393,6 +397,22 @@ export function AddInfluencerDialog({
                 />
                 {errors.costPerLead && <p className="text-xs text-destructive">{errors.costPerLead}</p>}
               </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="account-type">Type</Label>
+              <Select
+                value={form.accountType}
+                onValueChange={(value) => set("accountType", value)}
+              >
+                <SelectTrigger id="account-type">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="influencer">Influencer (creator)</SelectItem>
+                  <SelectItem value="referrer">Referrer</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

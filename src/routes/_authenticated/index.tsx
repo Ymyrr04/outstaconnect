@@ -45,7 +45,11 @@ import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfl
 import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
-import { resetInfluencerPassword } from "@/lib/influencer-account.functions";
+import {
+  createInfluencerAccount,
+  resetInfluencerPassword,
+} from "@/lib/influencer-account.functions";
+import { slugify } from "@/lib/slug";
 import { checkIsAdmin } from "@/lib/admin-setup.functions";
 
 export const Route = createFileRoute("/_authenticated/")({
@@ -96,6 +100,26 @@ function statusPill(status: string) {
   if (s === "on track") return "bg-[#B2EEF8] text-[#066F85]";
   return "bg-slate-100 text-slate-600";
 }
+
+type ApplicationRecord = {
+  id: string;
+  full_name: string;
+  handle: string;
+  email: string;
+  phone: string | null;
+  account_type: string;
+  message: string | null;
+  status: string;
+  created_at: string;
+};
+
+const typePill = (type?: string | null) =>
+  (type ?? "influencer") === "referrer"
+    ? "bg-amber-100 text-amber-700"
+    : "bg-[#B2EEF8] text-[#066F85]";
+
+const typeLabel = (type?: string | null) =>
+  (type ?? "influencer") === "referrer" ? "Referrer" : "Influencer";
 
 async function fetchAppData() {
   const { data: campaigns, error: campaignError } = await supabase
@@ -200,6 +224,21 @@ function AppPage() {
   });
   const leadsList = leadsData ?? [];
 
+  const { data: applicationsData, isLoading: applicationsLoading } = useQuery({
+    queryKey: ["app-data", "applications"],
+    enabled: isAdmin,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as ApplicationRecord[];
+    },
+  });
+  const applications = applicationsData ?? [];
+  const pendingApplications = applications.filter((a) => a.status === "Pending").length;
+
   const { data: contentTotalsData } = useQuery({
     queryKey: ["app-data", "content-totals"],
     enabled: isAdmin,
@@ -256,6 +295,85 @@ function AppPage() {
     password: string;
   } | null>(null);
   const [resettingId, setResettingId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+
+  const applyUrl = () => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "";
+    const isPrivate =
+      !origin ||
+      origin.includes("lovableproject.com") ||
+      origin.includes("-preview--") ||
+      origin.includes("localhost");
+    return `${isPrivate ? "https://outstaconnect.lovable.app" : origin}/apply`;
+  };
+
+  const copyApplyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(applyUrl());
+      toast.success("Sign-up link copied");
+    } catch {
+      toast.error("Couldn't copy the link.");
+    }
+  };
+
+  const approveApplication = async (app: ApplicationRecord) => {
+    const targetCampaign =
+      campaigns.find((c) => c.id === campaignFilter) ?? campaigns[0] ?? null;
+    if (!targetCampaign) {
+      toast.error("Create a campaign first, then approve this application.");
+      return;
+    }
+    setApprovingId(app.id);
+    try {
+      const email = app.email.trim().toLowerCase();
+      const { error } = await supabase.from("campaign_influencers").insert({
+        campaign_id: targetCampaign.id,
+        influencer_handle: app.handle || app.full_name,
+        slug: slugify(app.handle || app.full_name) || "creator",
+        email,
+        primary_email: email,
+        account_type: app.account_type,
+        content_type: "Not set",
+        status: "Pending",
+        date_onboarded: new Date().toISOString().slice(0, 10),
+      } as never);
+      if (error) throw error;
+
+      try {
+        const res = await createInfluencerAccount({ data: { email } });
+        if (res.created && res.password) setNewCredentials({ email, password: res.password });
+      } catch {
+        toast.error("Added, but their login account couldn't be created.");
+      }
+
+      const { error: updateError } = await supabase
+        .from("applications")
+        .update({ status: "Approved" } as never)
+        .eq("id", app.id);
+      if (updateError) throw updateError;
+
+      toast.success(`${app.full_name} approved`);
+      refresh();
+    } catch {
+      toast.error("Couldn't approve this application. Please try again.");
+    } finally {
+      setApprovingId(null);
+    }
+  };
+
+  const declineApplication = async (app: ApplicationRecord) => {
+    try {
+      const { error } = await supabase
+        .from("applications")
+        .update({ status: "Declined" } as never)
+        .eq("id", app.id);
+      if (error) throw error;
+      toast.success("Application declined");
+      refresh();
+    } catch {
+      toast.error("Couldn't update this application.");
+    }
+  };
 
   const resetPassword = async (row: InfluencerRecord) => {
     const email = (row as { email?: string | null }).email?.trim();
@@ -407,6 +525,9 @@ function AppPage() {
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="influencers">Influencers</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="applications">
+              Applications{pendingApplications > 0 ? ` (${pendingApplications})` : ""}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard">
@@ -657,6 +778,7 @@ function AppPage() {
                     <thead>
                       <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
                         <th className={thClass}>Influencer Handle</th>
+                        <th className={thClass}>Type</th>
                         <th className={thClass}>Campaign Name</th>
                         <th className={thClass}>Content Type</th>
                         <th className={thClass}>Leads</th>
@@ -671,6 +793,13 @@ function AppPage() {
                         <tr key={row.id} className="border-b border-slate-100 last:border-0">
                           <td className="py-4 pr-4 font-medium text-slate-900">
                             {row.influencer_handle}
+                          </td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${typePill(row.account_type)}`}
+                            >
+                              {typeLabel(row.account_type)}
+                            </span>
                           </td>
                           <td className="py-4 pr-4 text-slate-600">
                             {campaignName(row.campaign_id)}
@@ -814,6 +943,104 @@ function AppPage() {
               )}
             </section>
           </TabsContent>
+
+          <TabsContent value="applications">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-lg font-semibold text-slate-900">Applications</h2>
+                <button
+                  type="button"
+                  onClick={copyApplyLink}
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-medium text-[#0ABEDF] hover:text-[#0899B5]"
+                >
+                  <LinkIcon className="h-4 w-4" />
+                  Copy sign-up link
+                </button>
+              </div>
+
+              {applicationsLoading ? (
+                <p className="py-10 text-center text-sm text-slate-500">Loading…</p>
+              ) : applications.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center">
+                  <UserCheck className="h-10 w-10 text-slate-300" />
+                  <p className="mt-3 text-sm font-medium text-slate-600">No applications yet</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Share your sign-up link and new influencers or referrers will show up here.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[900px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+                        <th className={thClass}>Name</th>
+                        <th className={thClass}>Handle</th>
+                        <th className={thClass}>Type</th>
+                        <th className={thClass}>Email</th>
+                        <th className={thClass}>Date</th>
+                        <th className={thClass}>Status</th>
+                        <th className={thClass}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {applications.map((app) => (
+                        <tr key={app.id} className="border-b border-slate-100 last:border-0">
+                          <td className="py-4 pr-4 font-medium text-slate-900">{app.full_name}</td>
+                          <td className="py-4 pr-4 text-slate-600">{app.handle}</td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${typePill(app.account_type)}`}
+                            >
+                              {typeLabel(app.account_type)}
+                            </span>
+                          </td>
+                          <td className="py-4 pr-4 text-slate-600">{app.email}</td>
+                          <td className="py-4 pr-4 text-slate-600">{formatDate(app.created_at)}</td>
+                          <td className="py-4 pr-4">
+                            <span
+                              className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${
+                                app.status === "Approved"
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : app.status === "Declined"
+                                    ? "bg-rose-100 text-rose-700"
+                                    : "bg-slate-100 text-slate-600"
+                              }`}
+                            >
+                              {app.status}
+                            </span>
+                          </td>
+                          <td className="py-4 pr-4">
+                            {app.status === "Pending" ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="sm"
+                                  disabled={approvingId === app.id}
+                                  onClick={() => approveApplication(app)}
+                                  className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
+                                >
+                                  {approvingId === app.id ? "Approving…" : "Approve"}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => declineApplication(app)}
+                                >
+                                  Decline
+                                </Button>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-slate-400">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          </TabsContent>
+
         </Tabs>
       </div>
 

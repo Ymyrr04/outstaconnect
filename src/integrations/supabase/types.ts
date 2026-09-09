@@ -29,8 +29,48 @@ export type Database = {
         }
         Relationships: []
       }
+      applications: {
+        Row: {
+          account_type: string
+          created_at: string
+          email: string
+          full_name: string
+          handle: string
+          id: string
+          message: string | null
+          phone: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          account_type?: string
+          created_at?: string
+          email: string
+          full_name: string
+          handle: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          account_type?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          handle?: string
+          id?: string
+          message?: string | null
+          phone?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaign_influencers: {
         Row: {
+          account_type: string
           campaign_id: string
           content_type: string
           content_views: number
@@ -51,6 +91,7 @@ export type Database = {
           username: string | null
         }
         Insert: {
+          account_type?: string
           campaign_id: string
           content_type: string
           content_views?: number
@@ -71,6 +112,7 @@ export type Database = {
           username?: string | null
         }
         Update: {
+          account_type?: string
           campaign_id?: string
           content_type?: string
           content_views?: number
