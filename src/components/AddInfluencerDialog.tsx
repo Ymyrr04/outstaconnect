@@ -299,6 +299,21 @@ export function AddInfluencerDialog({
             </div>
 
             <div className="space-y-1.5">
+              <Label htmlFor="influencer-username">Username (optional login)</Label>
+              <Input
+                id="influencer-username"
+                value={form.username}
+                maxLength={30}
+                placeholder="creatorname"
+                onChange={(e) => set("username", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                They can sign in with this username or their login email.
+              </p>
+              {errors.username && <p className="text-xs text-destructive">{errors.username}</p>}
+            </div>
+
+            <div className="space-y-1.5">
               <Label htmlFor="influencer-email">Email login</Label>
               <Input
                 id="influencer-email"
@@ -313,6 +328,25 @@ export function AddInfluencerDialog({
               </p>
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="influencer-primary-email">Primary email</Label>
+              <Input
+                id="influencer-primary-email"
+                type="email"
+                value={form.primaryEmail}
+                maxLength={120}
+                placeholder="contact@email.com"
+                onChange={(e) => set("primaryEmail", e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Main contact address. The creator confirms this at first sign in.
+              </p>
+              {errors.primaryEmail && (
+                <p className="text-xs text-destructive">{errors.primaryEmail}</p>
+              )}
+            </div>
+
 
             <div className="space-y-1.5">
               <Label htmlFor="onboarded">Date onboarded</Label>
