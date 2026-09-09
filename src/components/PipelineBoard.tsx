@@ -140,14 +140,14 @@ export function PipelineBoard({ leads, handles, loading, onChanged }: Props) {
   return (
     <>
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex gap-4 overflow-x-auto pb-2">
+        <div className="grid grid-flow-col auto-cols-[minmax(220px,1fr)] gap-3 overflow-x-auto pb-2 2xl:grid-flow-row 2xl:grid-cols-6 2xl:auto-cols-auto 2xl:overflow-visible">
           {PIPELINE_STAGES.map((stage) => (
             <Droppable droppableId={stage} key={stage}>
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
                   {...provided.droppableProps}
-                  className={`w-[260px] shrink-0 rounded-xl border p-3 transition-colors ${
+                  className={`min-w-0 rounded-lg border p-3 transition-colors ${
                     snapshot.isDraggingOver
                       ? "border-slate-400 bg-slate-100"
                       : "border-slate-200 bg-slate-50"
