@@ -325,11 +325,30 @@ function PortalPage() {
         } as never));
       }
       if (error) throw error;
-      toast.success("Password updated");
+      if (profileRow) {
+        if (username) {
+          const { data: available } = await supabase.rpc("username_available", {
+            _username: username,
+            _self: profileRow.id,
+          });
+          if (available === false) {
+            setPwError("That username is already taken. Pick another one.");
+            return;
+          }
+        }
+        const { error: rowError } = await supabase
+          .from("campaign_influencers")
+          .update({ username: username || null, primary_email: primaryEmail })
+          .eq("id", profileRow.id);
+        if (rowError) throw rowError;
+        queryClient.invalidateQueries({ queryKey: ["portal", "rows"] });
+      }
+      toast.success("Account set up");
       setPwOpen(false);
       setPwCurrent("");
       setPwNew("");
       setPwConfirm("");
+
     } catch (e) {
       setPwError(e instanceof Error ? e.message : "Could not update the password.");
     } finally {
