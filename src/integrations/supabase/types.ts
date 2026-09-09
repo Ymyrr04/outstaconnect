@@ -241,9 +241,11 @@ export type Database = {
           company_size: string
           created_at: string
           full_name: string
+          hire_start_date: string | null
           id: string
           phone: string | null
           roles_hiring_for: string
+          stage: string
           talent_preference: string
           work_email: string
         }
@@ -253,9 +255,11 @@ export type Database = {
           company_size: string
           created_at?: string
           full_name: string
+          hire_start_date?: string | null
           id?: string
           phone?: string | null
           roles_hiring_for: string
+          stage?: string
           talent_preference: string
           work_email: string
         }
@@ -265,9 +269,11 @@ export type Database = {
           company_size?: string
           created_at?: string
           full_name?: string
+          hire_start_date?: string | null
           id?: string
           phone?: string | null
           roles_hiring_for?: string
+          stage?: string
           talent_preference?: string
           work_email?: string
         }
