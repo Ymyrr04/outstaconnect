@@ -44,9 +44,11 @@ export type Database = {
           influencer_handle: string
           leads: number
           link_clicks: number
+          primary_email: string | null
           slug: string
           status: string
           user_id: string | null
+          username: string | null
         }
         Insert: {
           campaign_id: string
@@ -62,9 +64,11 @@ export type Database = {
           influencer_handle: string
           leads?: number
           link_clicks?: number
+          primary_email?: string | null
           slug: string
           status?: string
           user_id?: string | null
+          username?: string | null
         }
         Update: {
           campaign_id?: string
@@ -80,9 +84,11 @@ export type Database = {
           influencer_handle?: string
           leads?: number
           link_clicks?: number
+          primary_email?: string | null
           slug?: string
           status?: string
           user_id?: string | null
+          username?: string | null
         }
         Relationships: [
           {
@@ -255,6 +261,10 @@ export type Database = {
         }[]
       }
       slugify_handle: { Args: { _handle: string }; Returns: string }
+      username_available: {
+        Args: { _self?: string; _username: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
