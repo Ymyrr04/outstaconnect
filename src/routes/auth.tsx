@@ -57,13 +57,15 @@ function AuthPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password) {
-      toast.error("Enter your email and password.");
+      toast.error("Enter your username or email and your password.");
       return;
     }
     setBusy(true);
     try {
+      const { email: loginEmail } = await resolveEmail({ data: { identifier: email.trim() } });
+      if (!loginEmail) throw new Error("We couldn't find an account with that username.");
       const { data: signInData, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: loginEmail,
         password,
       });
       if (error) throw error;
@@ -77,6 +79,7 @@ function AuthPage() {
       setBusy(false);
     }
   };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-white px-6 py-16">
