@@ -29,7 +29,9 @@ type Errors = Partial<Record<keyof typeof emptyForm, string>>;
 const emptyForm = {
   handle: "",
   slug: "",
+  username: "",
   email: "",
+  primaryEmail: "",
   dateOnboarded: "",
   contentType: "",
   leads: "0",
@@ -46,7 +48,9 @@ export type InfluencerRecord = {
   campaign_id: string;
   influencer_handle: string;
   slug: string;
+  username?: string | null;
   email?: string | null;
+  primary_email?: string | null;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -63,7 +67,9 @@ const formFrom = (r?: InfluencerRecord) =>
     ? {
         handle: r.influencer_handle,
         slug: r.slug ?? "",
+        username: r.username ?? "",
         email: r.email ?? "",
+        primaryEmail: r.primary_email ?? "",
         dateOnboarded: r.date_onboarded ?? "",
         contentType: r.content_type ?? "",
         leads: String(r.leads ?? 0),
@@ -75,6 +81,7 @@ const formFrom = (r?: InfluencerRecord) =>
         linkClicks: String(r.link_clicks ?? 0),
       }
     : { ...emptyForm };
+
 
 export function AddInfluencerDialog({
   campaignId,
