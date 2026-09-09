@@ -159,8 +159,11 @@ export function AddInfluencerDialog({
         influencer_handle: form.handle.trim(),
         slug: slugify(form.slug.trim() || form.handle.trim()) || "influencer",
         email,
+        username: form.username.trim() || null,
+        primary_email: form.primaryEmail.trim().toLowerCase() || null,
         date_onboarded: form.dateOnboarded || null,
         content_type: form.contentType.trim(),
+
         leads: Math.max(0, Number(form.leads) || 0),
         cost_per_lead: Math.max(0, Number(form.costPerLead) || 0),
         status: form.status,
