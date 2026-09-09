@@ -203,6 +203,23 @@ function PortalPage() {
     { views: 0, engagements: 0, shares: 0 },
   );
 
+  const leads = leadsQuery.data ?? [];
+  const groupedLeads = useMemo(() => {
+    const map: Record<string, PipelineLead[]> = {
+      New: [],
+      Contacted: [],
+      Qualified: [],
+      Matched: [],
+      Won: [],
+      Lost: [],
+    };
+    for (const lead of leads) {
+      const stage = lead.stage ?? "New";
+      (map[stage] ?? map.New).push(lead);
+    }
+    return map;
+  }, [leads]);
+
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ContentPost | null>(null);
   const [deleting, setDeleting] = useState<ContentPost | null>(null);
