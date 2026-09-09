@@ -848,8 +848,28 @@ function PortalPage() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
-              Replace the temporary password you were given with one only you know.
+              Set up your account: pick a username, confirm your primary email and replace the
+              temporary password with one only you know.
             </p>
+            <div className="space-y-2">
+              <Label htmlFor="pw-username">Username (for sign in)</Label>
+              <Input
+                id="pw-username"
+                value={profileUsername}
+                placeholder="yourname"
+                onChange={(e) => setProfileUsername(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pw-primary-email">Primary email</Label>
+              <Input
+                id="pw-primary-email"
+                type="email"
+                value={profilePrimaryEmail}
+                onChange={(e) => setProfilePrimaryEmail(e.target.value)}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="pw-current">Temporary password (if you have it)</Label>
               <Input
