@@ -327,26 +327,57 @@ function PortalPage() {
   };
 
 
-  // Profile: display name / handle + password change
+  // Profile: display name / handle, username, primary email + password change
   const profileRow = rows[0] ?? null;
   const [profileHandle, setProfileHandle] = useState("");
+  const [profileUsername, setProfileUsername] = useState("");
+  const [profilePrimaryEmail, setProfilePrimaryEmail] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
   useEffect(() => {
-    if (profileRow) setProfileHandle(profileRow.influencer_handle ?? "");
-  }, [profileRow?.id, profileRow?.influencer_handle]);
+    if (profileRow) {
+      setProfileHandle(profileRow.influencer_handle ?? "");
+      setProfileUsername(profileRow.username ?? "");
+      setProfilePrimaryEmail(profileRow.primary_email ?? "");
+    }
+  }, [profileRow?.id, profileRow?.influencer_handle, profileRow?.username, profileRow?.primary_email]);
 
   const saveProfile = async () => {
     const handle = profileHandle.trim();
+    const username = profileUsername.trim();
+    const primaryEmail = profilePrimaryEmail.trim();
     if (!handle) {
       toast.error("Enter your name or handle.");
+      return;
+    }
+    if (username && !/^[a-zA-Z0-9._-]{3,30}$/.test(username)) {
+      toast.error("Usernames are 3-30 letters, numbers, dots, dashes or underscores.");
+      return;
+    }
+    if (primaryEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(primaryEmail)) {
+      toast.error("Enter a valid primary email address.");
       return;
     }
     if (!profileRow) return;
     setProfileSaving(true);
     try {
+      if (username) {
+        const { data: available, error: checkError } = await supabase.rpc("username_available", {
+          _username: username,
+          _self: profileRow.id,
+        });
+        if (checkError) throw checkError;
+        if (available === false) {
+          toast.error("That username is already taken.");
+          return;
+        }
+      }
       const { error } = await supabase
         .from("campaign_influencers")
-        .update({ influencer_handle: handle })
+        .update({
+          influencer_handle: handle,
+          username: username || null,
+          primary_email: primaryEmail || null,
+        })
         .eq("id", profileRow.id);
       if (error) throw error;
       toast.success("Profile updated");
@@ -357,6 +388,7 @@ function PortalPage() {
       setProfileSaving(false);
     }
   };
+
 
   const [chgCurrent, setChgCurrent] = useState("");
   const [chgNew, setChgNew] = useState("");
