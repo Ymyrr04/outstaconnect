@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveLoginEmail } from "@/lib/login.functions";
 import outstaLogoAsset from "@/assets/outsta-logo.png.asset.json";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -29,9 +32,11 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const resolveEmail = useServerFn(resolveLoginEmail);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+
 
   const redirectByUserType = async (userId: string) => {
     const { data: influencer } = await supabase
