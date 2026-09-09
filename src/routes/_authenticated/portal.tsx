@@ -750,12 +750,37 @@ function PortalPage() {
                       />
                     </div>
                     <div className="space-y-1.5">
+                      <Label htmlFor="profile-username">Username (for sign in)</Label>
+                      <Input
+                        id="profile-username"
+                        value={profileUsername}
+                        placeholder="yourname"
+                        onChange={(e) => setProfileUsername(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-500">
+                        You can sign in with either this username or your login email.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="profile-primary-email">Primary email</Label>
+                      <Input
+                        id="profile-primary-email"
+                        type="email"
+                        value={profilePrimaryEmail}
+                        onChange={(e) => setProfilePrimaryEmail(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-500">
+                        Where we contact you about this campaign.
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
                       <Label htmlFor="profile-email">Login email</Label>
                       <Input id="profile-email" value={email} readOnly disabled />
                       <p className="text-xs text-slate-500">
                         Contact your OutSta manager to change your login email.
                       </p>
                     </div>
+
                     <Button
                       className="bg-[#0ABEDF] text-white hover:bg-[#0899B5]"
                       onClick={() => {
