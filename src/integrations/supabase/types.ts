@@ -300,14 +300,6 @@ export type Database = {
           influencer_handle: string
         }[]
       }
-      get_public_influencer: {
-        Args: { _slug: string }
-        Returns: {
-          id: string
-          influencer_handle: string
-          slug: string
-        }[]
-      }
       slugify_handle: { Args: { _handle: string }; Returns: string }
       username_available: {
         Args: { _self?: string; _username: string }
