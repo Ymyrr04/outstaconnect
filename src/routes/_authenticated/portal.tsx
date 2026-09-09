@@ -291,6 +291,16 @@ function PortalPage() {
 
   const submitPassword = async () => {
     setPwError("");
+    const username = profileUsername.trim();
+    const primaryEmail = profilePrimaryEmail.trim();
+    if (username && !/^[a-zA-Z0-9._-]{3,30}$/.test(username)) {
+      setPwError("Usernames are 3-30 letters, numbers, dots, dashes or underscores.");
+      return;
+    }
+    if (!primaryEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(primaryEmail)) {
+      setPwError("Enter your primary email address.");
+      return;
+    }
     if (pwNew.length < 8) {
       setPwError("Use at least 8 characters.");
       return;
@@ -301,6 +311,7 @@ function PortalPage() {
     }
     setPwSaving(true);
     try {
+
       // Try without the temporary password first; some setups don't require it.
       let { error } = await supabase.auth.updateUser({
         password: pwNew,
