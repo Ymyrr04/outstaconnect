@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { LogOut, Pencil, Trash2, Plus, User } from "lucide-react";
+import { PIPELINE_STAGES, type PipelineLead, type PipelineStage } from "@/components/PipelineBoard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,6 +79,15 @@ type Row = {
 
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+
+function payoutBadge(hireStart: string | null | undefined) {
+  if (!hireStart) return null;
+  const due = new Date(hireStart);
+  due.setDate(due.getDate() + 30);
+  const today = new Date();
+  const days = Math.ceil((due.getTime() - today.getTime()) / 86400000);
+  return days > 0 ? `Payout in ${days} day${days === 1 ? "" : "s"}` : "Payout due";
+}
 
 const statusClass = (status: string) =>
   status === "Paid"
@@ -163,6 +173,26 @@ function PortalPage() {
     if (postsQuery.isError) toast.error("Couldn't load your content. Please try again.");
   }, [postsQuery.isError]);
 
+  const leadsQuery = useQuery({
+    queryKey: ["portal", "leads", influencerIds.join(",")],
+    enabled: influencerIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("leads")
+        .select(
+          "id, campaign_influencer_id, full_name, company_name, roles_hiring_for, stage, hire_start_date",
+        )
+        .in("campaign_influencer_id", influencerIds)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as PipelineLead[];
+    },
+  });
+
+  useEffect(() => {
+    if (leadsQuery.isError) toast.error("Couldn't load your leads. Please try again.");
+  }, [leadsQuery.isError]);
+
   const posts = postsQuery.data ?? [];
   const contentTotals = posts.reduce(
     (acc, p) => ({
@@ -172,6 +202,23 @@ function PortalPage() {
     }),
     { views: 0, engagements: 0, shares: 0 },
   );
+
+  const leads = leadsQuery.data ?? [];
+  const groupedLeads = useMemo(() => {
+    const map: Record<PipelineStage, PipelineLead[]> = {
+      New: [],
+      Contacted: [],
+      Qualified: [],
+      Matched: [],
+      Won: [],
+      Lost: [],
+    };
+    for (const lead of leads) {
+      const stage = (lead.stage ?? "New") as PipelineStage;
+      map[stage].push(lead);
+    }
+    return map;
+  }, [leads]);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<ContentPost | null>(null);
@@ -686,6 +733,64 @@ function PortalPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
+              )}
+            </section>
+
+            <section className="mt-14">
+              <p className="text-[11px] uppercase tracking-wider text-slate-400">Your leads</p>
+              {leadsQuery.isLoading ? (
+                <p className="mt-4 text-sm text-slate-500">Loading your leads…</p>
+              ) : leads.length === 0 ? (
+                <div className="mt-4 rounded-md border border-slate-200 p-10 text-center">
+                  <p className="text-sm font-medium text-slate-900">No leads yet</p>
+                  <p className="mt-1 text-sm text-slate-500">
+                    Leads submitted through your unique link will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4 space-y-8">
+                  {PIPELINE_STAGES.map((stage) => {
+                    const stageLeads = groupedLeads[stage] ?? [];
+                    return (
+                      <div key={stage}>
+                        <div className="mb-3 flex items-center gap-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            {stage}
+                          </span>
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+                            {stageLeads.length}
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {stageLeads.map((lead) => {
+                            const badge = stage === "Won" ? payoutBadge(lead.hire_start_date) : null;
+                            return (
+                              <div
+                                key={lead.id}
+                                className="rounded-lg border border-slate-200 bg-white p-4 text-sm"
+                              >
+                                <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                  <div>
+                                    <p className="font-medium text-slate-900">{lead.full_name}</p>
+                                    <p className="text-xs text-slate-600">{lead.company_name}</p>
+                                  </div>
+                                  {badge ? (
+                                    <span className="mt-1 inline-flex w-fit rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 sm:mt-0">
+                                      {badge}
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <p className="mt-2 text-xs text-slate-500">
+                                  {lead.roles_hiring_for}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </section>
