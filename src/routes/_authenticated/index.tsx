@@ -44,6 +44,7 @@ import { CreateCampaignDialog, type CampaignRecord } from "@/components/CreateCa
 import { AddInfluencerDialog, type InfluencerRecord } from "@/components/AddInfluencerDialog";
 import { supabase } from "@/integrations/supabase/client";
 import { getLeadCounts, getLeads } from "@/lib/leads.functions";
+import { PipelineBoard } from "@/components/PipelineBoard";
 import { getContentTotals, type ContentTotals } from "@/lib/content-posts.functions";
 import {
   createInfluencerAccount,
@@ -525,6 +526,7 @@ function AppPage() {
             <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
             <TabsTrigger value="influencers">Influencers</TabsTrigger>
             <TabsTrigger value="leads">Leads</TabsTrigger>
+            <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
             <TabsTrigger value="applications">
               Applications{pendingApplications > 0 ? ` (${pendingApplications})` : ""}
             </TabsTrigger>
@@ -941,6 +943,22 @@ function AppPage() {
                   </table>
                 </div>
               )}
+            </section>
+          </TabsContent>
+
+          <TabsContent value="pipeline">
+            <section className="rounded-2xl border border-slate-200 bg-white p-6">
+              <h2 className="mb-4 text-lg font-semibold text-slate-900">Lead pipeline</h2>
+              <PipelineBoard
+                leads={leadsList}
+                handles={Object.fromEntries(
+                  influencers.map((i) => [i.id, i.influencer_handle]),
+                )}
+                loading={leadsLoading}
+                onChanged={() =>
+                  queryClient.invalidateQueries({ queryKey: ["app-data"] })
+                }
+              />
             </section>
           </TabsContent>
 

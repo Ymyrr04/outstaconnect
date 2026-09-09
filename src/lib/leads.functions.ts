@@ -37,5 +37,7 @@ export const getLeads = createServerFn({ method: "GET" }).handler(async () => {
     talent_preference: string;
     phone: string | null;
     created_at: string;
+    stage: string | null;
+    hire_start_date: string | null;
   }>;
 });
