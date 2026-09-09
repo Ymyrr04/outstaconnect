@@ -173,6 +173,26 @@ function PortalPage() {
     if (postsQuery.isError) toast.error("Couldn't load your content. Please try again.");
   }, [postsQuery.isError]);
 
+  const leadsQuery = useQuery({
+    queryKey: ["portal", "leads", influencerIds.join(",")],
+    enabled: influencerIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("leads")
+        .select(
+          "id, campaign_influencer_id, full_name, company_name, roles_hiring_for, stage, hire_start_date",
+        )
+        .in("campaign_influencer_id", influencerIds)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as PipelineLead[];
+    },
+  });
+
+  useEffect(() => {
+    if (leadsQuery.isError) toast.error("Couldn't load your leads. Please try again.");
+  }, [leadsQuery.isError]);
+
   const posts = postsQuery.data ?? [];
   const contentTotals = posts.reduce(
     (acc, p) => ({
