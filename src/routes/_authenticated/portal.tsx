@@ -321,6 +321,8 @@ function PortalPage() {
   const [pwSaving, setPwSaving] = useState(false);
 
   useEffect(() => {
+    // Only creators with a linked record need first sign-in setup.
+    if (!rowsQuery.isSuccess || rows.length === 0) return;
     let active = true;
     (async () => {
       try {
@@ -334,7 +336,8 @@ function PortalPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [rowsQuery.isSuccess, rows.length]);
+
 
   const submitPassword = async () => {
     setPwError("");
