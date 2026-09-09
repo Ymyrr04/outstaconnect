@@ -62,6 +62,8 @@ type ContentPost = {
 type Row = {
   id: string;
   influencer_handle: string;
+  username: string | null;
+  primary_email: string | null;
   content_type: string;
   leads: number;
   cost_per_lead: number;
@@ -72,6 +74,7 @@ type Row = {
   link_clicks: number;
   campaigns: { name: string } | null;
 };
+
 
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
@@ -100,7 +103,8 @@ function PortalPage() {
       const { data, error } = await supabase
         .from("campaign_influencers")
         .select(
-          "id, influencer_handle, content_type, leads, cost_per_lead, status, date_paid, content_views, engagements, link_clicks, campaigns(name)",
+          "id, influencer_handle, username, primary_email, content_type, leads, cost_per_lead, status, date_paid, content_views, engagements, link_clicks, campaigns(name)",
+
         )
         .eq("user_id", user?.id ?? "")
         .order("date_onboarded", { ascending: true });
