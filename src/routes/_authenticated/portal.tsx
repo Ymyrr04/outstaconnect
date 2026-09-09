@@ -80,6 +80,15 @@ type Row = {
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
+function payoutBadge(hireStart: string | null | undefined) {
+  if (!hireStart) return null;
+  const due = new Date(hireStart);
+  due.setDate(due.getDate() + 30);
+  const today = new Date();
+  const days = Math.ceil((due.getTime() - today.getTime()) / 86400000);
+  return days > 0 ? `Payout in ${days} day${days === 1 ? "" : "s"}` : "Payout due";
+}
+
 const statusClass = (status: string) =>
   status === "Paid"
     ? "bg-emerald-50 text-emerald-700"
